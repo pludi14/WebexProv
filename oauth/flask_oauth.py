@@ -13,16 +13,14 @@ redirectURI = "http://localhost:10060/oauth"  # This could be different if you p
 
 def get_tokens(code):
     """Gets access token and refresh token"""
-    print
-    "code:", code
-    url = "https://api.webex.com/v1/access_token"
+    print("code:", code)
+    url = "https://webexapis.com/v1/access_token"
     headers = {'accept': 'application/json', 'content-type': 'application/x-www-form-urlencoded'}
     payload = ("grant_type=authorization_code&client_id={0}&client_secret={1}&"
                "code={2}&redirect_uri={3}").format(clientID, secretID, code, redirectURI)
     req = requests.post(url=url, data=payload, headers=headers)
     results = json.loads(req.text)
-    print
-    results
+    print(results)
     access_token = results["access_token"]
     refresh_token = results["refresh_token"]
     return access_token, refresh_token
@@ -30,7 +28,7 @@ def get_tokens(code):
 
 def get_oauthuser_info(access_token):
     """Retreives OAuth user's details."""
-    url = "https://api.webex.com/v1/people/me"
+    url = "https://webexapis.com/v1/people/me"
     headers = {'accept': 'application/json', 'Content-Type': 'application/json',
                'Authorization': 'Bearer ' + access_token}
     req = requests.get(url=url, headers=headers)
@@ -51,15 +49,12 @@ def main_page():
 def oauth():
     """Retrieves oauth code to generate tokens for users"""
 
-    if "code" in request.args and state == "YOUR_STATE_STRING":
+    if "code" in request.args and request.args.get("state") == "geht":
         state = request.args.get("state")  # Captures value of the state.
         code = request.args.get("code")  # Captures value of the code.
-        print
-        "OAuth code:", code
-        print
-        "OAuth state:", state
-        access_token, refresh_token = get_tokens(
-            code)  # As you can see, get_tokens() uses the code and returns access and refresh tokens.
+        print("OAuth code:", code)
+        print("OAuth state:", state)
+        access_token, refresh_token = get_tokens(code)  # As you can see, get_tokens() uses the code and returns access and refresh tokens.
 
         # Now, let's do something with the generated token: Get the user's info: PersonId, Email Address and DisplayName.
         personID, emailID, displayName = get_oauthuser_info(access_token)
