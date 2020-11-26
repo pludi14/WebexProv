@@ -42,7 +42,7 @@ def get_oauthuser_info(access_token):
 @app.route("/")
 def main_page():
     """Main Grant page"""
-    return render_template("index.html")
+    return render_template("index.htmlcss")
 
 
 @app.route("/oauth")  # Endpoint acting as Redirect URI.
@@ -64,9 +64,9 @@ def oauth():
         "email ID:", emailID
         print
         "display Name", displayName
-        return render_template("granted.html")
+        return render_template("granted.htmlcss")
     else:
-        return render_template("index.html")
+        return render_template("index.htmlcss")
 
 
 if __name__ == '__main__':
