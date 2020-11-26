@@ -5,6 +5,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="eigenerOrdner" />
+    <orderEntry type="module" module-name="dne-dna-code" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="format" value="PLAIN" />
