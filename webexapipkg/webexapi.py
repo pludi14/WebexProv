@@ -33,7 +33,14 @@ class Webexapi():
 
 
     def insertUser(self):
-        print("Muss noch implementiert werden.")
+        #Muss noch sauber implementiert werden.
+        queryParams = {}
+        response = self.__createRequest("people", "POST", queryParams)
+        responsetext = json.loads(response.text)
+        if response.status_code == 200:
+            return responsetext
+        else:
+            raise WebexAPIException(statuscode=response.status_code, text=responsetext["message"]);
 
 
 
