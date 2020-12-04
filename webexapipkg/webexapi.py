@@ -31,7 +31,6 @@ class Webexapi():
             raise WebexAPIException(statuscode=response.status_code, text=responsetext["message"]);
 
 
-
     def insertUser(self):
         #Muss noch sauber implementiert werden.
         queryParams = {}
@@ -45,7 +44,7 @@ class Webexapi():
 
 
 if __name__=="__main__":
-    api=Webexapi(apikey="MTVhM2NlOGUtMTA1Mi00YWI0LTk2ZTMtNjE3YjM2NjVjY2VlYjRmNmIxNDItYjU1_PF84_7d2b833a-567c-442f-be92-af5fb4c537be")
+    api=Webexapi(apikey="ZmVhN2NhODItMmRkYi00OWQ1LThlMjAtNmQxMWE5N2Y3ZDBjN2MwNDc1NGItMmVm_PF84_7d2b833a-567c-442f-be92-af5fb4c537be")
     try:
         users=api.listUser()
         print((users["items"]))
