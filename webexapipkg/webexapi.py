@@ -24,14 +24,15 @@ class Webexapi():
     log.addHandler(ch)
 
     # print statements from `http.client.HTTPConnection` to console/stdout
-    HTTPConnection.debuglevel = 1
+    # Auf 1 setzen für Debug
+    HTTPConnection.debuglevel = 0
 
 
     def __createRequest(self, urlZiel, methode, queryParameter={}, querryData=""):
         apiUrl = "https://webexapis.com/v1/"+urlZiel
         httpHeaders = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + self.__apikey}
 
-        print(apiUrl)
+        #print(apiUrl)
 
         if methode=="GET":
             response = requests.get(url=apiUrl, headers=httpHeaders, params=queryParameter)
@@ -40,7 +41,10 @@ class Webexapi():
             response = requests.put(url=apiUrl, headers=httpHeaders, params=queryParameter, data=querryData)
             responsetext = json.loads(response.text)
         if methode=="POST":
-            response = requests.post(url=apiUrl, headers=httpHeaders, params=queryParameter)
+            response = requests.post(url=apiUrl, headers=httpHeaders, params=queryParameter, data=querryData)
+            responsetext = json.loads(response.text)
+        if methode=="DELETE":
+            response = requests.delete(url=apiUrl, headers=httpHeaders, params=queryParameter)
             responsetext = json.loads(response.text)
 
         if response.status_code == 200:
@@ -52,22 +56,41 @@ class Webexapi():
     def __setApikey(self, apikey=""):
         self.__apikey=apikey
 
-    def listUser(self):
-        queryParams = {}
+    def listUser(self, **kwargs):
+        queryParams = kwargs if kwargs else {}
+
+        #if kwargs:
+        #    for key in kwargs:
+        #        queryParams[key] = kwargs[key]
+
         response=self.__createRequest("people", "GET", queryParams)
-        responsetext = json.loads(response.text)
-        return responsetext
+        print(response)
+        return response
 
 
-    def insertUser(self):
-        #Muss noch sauber implementiert werden.
-        queryParams = {}
-        response = self.__createRequest("people", "POST", queryParams)
-        responsetext = json.loads(response.text)
-        if response.status_code == 200:
-            return responsetext
-        else:
-            raise WebexAPIException(statuscode=response.status_code, text=responsetext["message"]);
+    def insertUser(self, **kwargs):
+
+        data = {}
+
+        # print(kwargs)
+        for key in kwargs:
+            data[key] = kwargs[key]
+
+        queryParams = {"callingData:" "true"}
+        jsondata = json.dumps(data)
+
+        response = self.__createRequest("people", "POST", querryData=jsondata)
+
+        print(response)
+        return response
+
+
+    def deleteUser(self, personID=""):
+
+        response = self.__createRequest("people/"+personID, "DELETE")
+        print(response)
+        return response
+
 
     def updateUser(self, **kwargs):
 
@@ -96,8 +119,12 @@ class Webexapi():
 
         response = self.__createRequest("people/"+personID, "PUT", querryData=jsondata)
         print(response)
+        return response
+
 
     def parseJSON(self, datei):
+        #wird gar nicht genutzt
+
         with open(os.path.join(self.__referencePath,datei)) as file:
             parsedJSON = json.load(file)
             return parsedJSON
