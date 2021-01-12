@@ -97,22 +97,9 @@ class Webexapi():
         personID = kwargs.pop("personid")
         data = {}
 
-        #print(kwargs)
         for key in kwargs:
             data[key]=kwargs[key]
 
-
-        #querrydata["emails"] = kwargs["emails"] if kwargs["emails"] else []
-        #querrydata["phoneNumbers"] = kwargs["phoneNumbers"] if kwargs["phoneNumbers"] else ""
-        #querrydata["extension"] = kwargs["extension"] if kwargs["extension"] else ""
-        #querrydata["locationId"] = kwargs["locationId"] if kwargs["locationId"] else ""
-        #querrydata["displayName"] = kwargs["displayName"] if kwargs["displayName"] else ""
-        #querrydata["firstName"] = kwargs["firstName"] if kwargs["firstName"] else ""
-        #querrydata["lastName"] = kwargs["lastName"] if kwargs["lastName"] else ""
-        #querrydata["avatar"] = kwargs["avatar"] if kwargs["avatar"] else ""
-        #querrydata["orgId"] = kwargs["orgId"] if kwargs["orgId"] else ""
-        #querrydata["roles"] = kwargs["roles"] if kwargs["roles"] else ""
-        #querrydata["licenses"] = kwargs["licenses"] if kwargs["licenses"] else ""
 
         queryParams = {"callingData:" "true"}
         jsondata=json.dumps(data)
