@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../../02_Arbeit/Python-Skripte/.idea/Python-Skripte.iml" filepath="$PROJECT_DIR$/../../../02_Arbeit/Python-Skripte/.idea/Python-Skripte.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/WebexCallingProv.iml" filepath="$PROJECT_DIR$/.idea/WebexCallingProv.iml" />
       <module fileurl="file://$USER_HOME$/PycharmProjects/dne-dna-code/.idea/dne-dna-code.iml" filepath="$USER_HOME$/PycharmProjects/dne-dna-code/.idea/dne-dna-code.iml" />
       <module fileurl="file://$USER_HOME$/OneDrive - Deutsche Telekom AG/Schulungen_Seminare/Python/Kursunterlagen+Programme/eigenerOrdner/.idea/eigenerOrdner.iml" filepath="$USER_HOME$/OneDrive - Deutsche Telekom AG/Schulungen_Seminare/Python/Kursunterlagen+Programme/eigenerOrdner/.idea/eigenerOrdner.iml" />
