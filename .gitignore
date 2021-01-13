@@ -1,2 +1,4 @@
 #Ignore Pycharm Stuff
 .idea/
+.DS_Store/
+__pycache__/
