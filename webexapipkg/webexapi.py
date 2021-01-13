@@ -72,7 +72,6 @@ class Webexapi():
 
         data = {}
 
-        # print(kwargs)
         for key in kwargs:
             data[key] = kwargs[key]
 
