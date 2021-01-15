@@ -25,7 +25,6 @@ class Excelhandler():
 
 
 
-
     def __getAnzahlDatensaetze(self):
         wertvorhanden=True
         zaehler=0
@@ -48,7 +47,6 @@ class Excelhandler():
             datensatz["firstName"]=zeile[0].value
             datensatz["lastName"] = zeile[0].value
             datensatz["emails"]=zeile[2].value
-
 
             daten.append(datensatz)
 

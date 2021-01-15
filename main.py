@@ -1,15 +1,22 @@
-from webexapipkg.webexapi import Webexapi
-from webexapipkg.webexAPIException import WebexAPIException
 from flask import Flask, request, render_template
-from excelpkg.excel import Excelhandler
+from controller import Controller
+
 
 
 app = Flask(__name__, template_folder="./gui/htmlcss/")
+
+controller=None
 
 @app.route('/', methods=["POST", "GET"])
 def index():
     if request.method == "GET":
         return render_template("index.html")
+
+
+@app.route('/auth', methods=["POST", "GET"])
+def auth():
+    if request.method == "GET":
+        return render_template("auth.html")
 
 
 apikey="MTBmM2JhNzEtZGExMy00M2VlLWE5OTMtMGY1NmUxNWMxYTBjYjExMmMyZGQtMmMw_PF84_7d2b833a-567c-442f-be92-af5fb4c537be"
@@ -26,15 +33,9 @@ apikey="MTBmM2JhNzEtZGExMy00M2VlLWE5OTMtMGY1NmUxNWMxYTBjYjExMmMyZGQtMmMw_PF84_7d
 
 
 if __name__=="__main__":
-    api=Webexapi(apikey=apikey)
-    excelhandler=Excelhandler(datei="Kunden-Excel-DRAFT.xlsx")
-    excelhandler.leseExcel()
+    app.run()
+    controller = Controller()
 
-
-
-
-
-    #app.run(port=8443, debug=True)
 
 
 
