@@ -33,8 +33,16 @@ apikey="MTBmM2JhNzEtZGExMy00M2VlLWE5OTMtMGY1NmUxNWMxYTBjYjExMmMyZGQtMmMw_PF84_7d
 
 
 if __name__=="__main__":
-    app.run()
+    #app.run()
     controller = Controller()
+    controller.leseExcel("/Users/mpludra/OneDrive/03_Techniker Schule/Techniker Arbeit/Kunden-Excel/Kunden-Excel-DRAFT.xlsx")
+    controller.setToken("ZjgzMjYxZjItN2IwNy00N2Q2LTliYWEtOGJlMDZjNjZjODUwZDhiZjhkZmUtMjdm_PF84_7d2b833a-567c-442f-be92-af5fb4c537be")
+
+
+
+
+
+
 
 
 

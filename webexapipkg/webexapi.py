@@ -10,10 +10,15 @@ from http.client import HTTPConnection
 class Webexapi():
 
     def __init__(self, apikey=""):
-        self.__apikey = apikey
+        self.__apiToken = apikey
         self.__path = pathlib.Path(__file__).parent.absolute()
         self.__workdir = pathlib.Path().absolute()
         self.__referencePath = str(self.__workdir)+"/webexapipkg/reference/"
+
+
+    def __setApiToken(self, x): self.__apiToken =x
+    def __getApiToken(self): return self.__apiToken
+    apiToken=property(__getApiToken, __setApiToken)
 
     log = logging.getLogger('urllib3')
     log.setLevel(logging.DEBUG)
@@ -28,9 +33,11 @@ class Webexapi():
     HTTPConnection.debuglevel = 0
 
 
+
+
     def __createRequest(self, urlZiel, methode, queryParameter={}, querryData=""):
         apiUrl = "https://webexapis.com/v1/"+urlZiel
-        httpHeaders = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + self.__apikey}
+        httpHeaders = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + self.__apiToken}
 
         #print(apiUrl)
 
@@ -43,6 +50,7 @@ class Webexapi():
         if methode=="POST":
             response = requests.post(url=apiUrl, headers=httpHeaders, params=queryParameter, data=querryData)
             responsetext = json.loads(response.text)
+            print(responsetext)
         if methode=="DELETE":
             response = requests.delete(url=apiUrl, headers=httpHeaders, params=queryParameter)
             responsetext = json.loads(response.text)
@@ -52,9 +60,6 @@ class Webexapi():
         else:
             raise WebexAPIException(statuscode=response.status_code, text=responsetext["message"]);
 
-
-    def __setApikey(self, apikey=""):
-        self.__apikey=apikey
 
     def listUser(self, **kwargs):
         queryParams = kwargs if kwargs else {}
@@ -68,19 +73,18 @@ class Webexapi():
         return response
 
 
-    def insertUser(self, **kwargs):
+    def insertUser(self, daten):
 
-        data = {}
+        data = daten
 
-        for key in kwargs:
-            data[key] = kwargs[key]
+        #for key in kwargs:
+        #    data[key] = kwargs[key]
 
         queryParams = {"callingData:" "true"}
         jsondata = json.dumps(data)
 
         response = self.__createRequest("people", "POST", querryData=jsondata)
 
-        print(response)
         return response
 
 
@@ -99,13 +103,35 @@ class Webexapi():
         for key in kwargs:
             data[key]=kwargs[key]
 
-
         queryParams = {"callingData:" "true"}
         jsondata=json.dumps(data)
 
         response = self.__createRequest("people/"+personID, "PUT", querryData=jsondata)
         print(response)
         return response
+
+    def getOrgIDs(self):
+        response = self.__createRequest("organizations", "GET")
+        return response["items"]
+
+    def getLicenseFromOrg(self, orgID=""):
+        querryParams={}
+        querryParams["orgId"]=orgID
+        response=self.__createRequest("licenses", "GET", queryParameter=querryParams)
+        return response["items"]
+
+    def insertDevice(self, placeID):
+        querryParams={}
+        querryParams["placeId"]=placeID
+        response=self.__createRequest("devices/activaionCode","POST",queryParameter=querryParams)
+        #return activationCode
+
+    def getWorkspaces(self,orgID=""):
+        querryParams = {}
+        querryParams["orgId"] = orgID
+        response = self.__createRequest("workspaces", "GET", queryParameter=querryParams)
+        return response["items"]
+
 
 
     def parseJSON(self, datei):

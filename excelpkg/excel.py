@@ -17,8 +17,8 @@ class Excelhandler():
                                                        # Nur für den Verwender der Klasse nicht innerhalb der Klasse  Verwenden
 
     def leseExcel(self, datei=""):
-        exceldatei= self.__dateiname if self.__dateiname else datei
-        wb = load_workbook(filename=exceldatei)
+        self.__dateiname = self.__dateiname if self.__dateiname else datei
+        wb = load_workbook(filename=self.__dateiname)
         self.__daten_sheet=wb["Daten"]
         self.__anzahlDatensaetze=self.__getAnzahlDatensaetze()
         self.__alleRows=self.__daten_sheet.rows
@@ -36,7 +36,6 @@ class Excelhandler():
             else:
                 zaehler=zaehler+1
                 row=row+1
-        print(zaehler)
         return zaehler
 
     def getDaten(self):
@@ -49,12 +48,8 @@ class Excelhandler():
             datensatz["emails"]=zeile[2].value
 
             daten.append(datensatz)
-
-        print(daten)
-
-
-
-
+        daten.pop(0)
+        return daten
 
 
 
