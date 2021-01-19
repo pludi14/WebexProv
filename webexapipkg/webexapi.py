@@ -5,6 +5,7 @@ import os
 import pathlib
 import logging
 from http.client import HTTPConnection
+import asyncio
 
 
 class Webexapi():
@@ -44,6 +45,7 @@ class Webexapi():
         if methode=="GET":
             response = requests.get(url=apiUrl, headers=httpHeaders, params=queryParameter)
             responsetext = json.loads(response.text)
+            #print(responsetext)
         if methode=="PUT":
             response = requests.put(url=apiUrl, headers=httpHeaders, params=queryParameter, data=querryData)
             responsetext = json.loads(response.text)
@@ -114,7 +116,7 @@ class Webexapi():
         response = self.__createRequest("organizations", "GET")
         return response["items"]
 
-    def getLicenseFromOrg(self, orgID=""):
+    async def getLicenseFromOrg(self, orgID=""):
         querryParams={}
         querryParams["orgId"]=orgID
         response=self.__createRequest("licenses", "GET", queryParameter=querryParams)
@@ -126,7 +128,7 @@ class Webexapi():
         response=self.__createRequest("devices/activaionCode","POST",queryParameter=querryParams)
         #return activationCode
 
-    def getWorkspaces(self,orgID=""):
+    async def getWorkspaces(self,orgID=""):
         querryParams = {}
         querryParams["orgId"] = orgID
         response = self.__createRequest("workspaces", "GET", queryParameter=querryParams)

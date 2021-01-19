@@ -1,6 +1,7 @@
 from excelpkg.excel import Excelhandler
 from webexapipkg.webexapi import Webexapi
 from webexapipkg.orgInformationen import OrgInformationen
+import asyncio
 
 
 class Controller():
@@ -31,18 +32,26 @@ class Controller():
 
     def setToken(self, token):
         self.__api.apiToken=token
-        self.__getOrgInformations()
+        asyncio.run(self.__getOrgInformations())
+        #self.__getOrgInformations()
 
-    def __getOrgInformations(self):
+    async def __getOrgInformations(self):
 
         orgIDs= self.__api.getOrgIDs()
         for org in orgIDs:
             orgInfo = OrgInformationen(org["id"],org["displayName"])
-            orgLizenzen=self.__api.getLicenseFromOrg(org["id"])
-            orgWorkspaces=self.__api.getWorkspaces(org["id"])
-            orgInfo.lizenztypen=orgLizenzen
-            orgInfo.workspaces=orgWorkspaces
+            infos = asyncio.gather(self.__api.getLicenseFromOrg(org["id"]), self.__api.getWorkspaces(org["id"])) #Asyncio Task einrichten
+            await infos #warten bis task vorbei. Beide Methoden werden gleichzeitig durchgeführt.
+
+            orgInfo.lizenztypen=infos.result()[0]
+            orgInfo.workspaces=infos.result()[1]
             self.__orgs.append(orgInfo)
 
+
+
+if __name__ == '__main__':
+    apikey = "NmM3YTVjNzktMzAzZS00ZWI4LTg4ZWUtMzdjMjU1MDFhZTNlOWNiMzdkZGItZTRk_PF84_7d2b833a-567c-442f-be92-af5fb4c537be"
+    ct=Controller()
+    ct.setToken(apikey)
 
 
