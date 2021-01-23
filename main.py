@@ -35,10 +35,10 @@ apitoken="NTk5ZmRlZDMtNmE5MS00Mjc2LWI5ZjQtNzIxNWExMTllMTQ0MmI1OTJlYWYtZDNl_PE93_
 if __name__=="__main__":
     #app.run()
     controller = Controller()
-    controller.leseExcel("/Users/mpludra/OneDrive/03_Techniker Schule/Techniker Arbeit/Kunden-Excel/Kunden-Excel-DRAFT.xlsx")
     controller.setToken(apitoken)
-
-
+    controller.aktuelle_Org="Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9mMGNkMDA1OC1lMDhlLTQ3ZjktYTBkNS01OTQwZDZjY2I2YWI"
+    controller.leseExcel("/Users/mpludra/OneDrive/03_Techniker Schule/Techniker Arbeit/Kunden-Excel/Kunden-Excel-DRAFT.xlsx")
+    controller.starte_Update()
 
 
 

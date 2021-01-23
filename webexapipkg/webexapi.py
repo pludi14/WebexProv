@@ -63,16 +63,10 @@ class Webexapi():
             raise WebexAPIException(statuscode=response.status_code, text=responsetext["message"]);
 
 
-    def listUser(self, **kwargs):
+    def get_User(self, **kwargs):
         queryParams = kwargs if kwargs else {}
-
-        #if kwargs:
-        #    for key in kwargs:
-        #        queryParams[key] = kwargs[key]
-
         response=self.__createRequest("people", "GET", queryParams)
-        print(response)
-        return response
+        return response["items"]
 
 
     def insertUser(self, daten):
@@ -97,16 +91,16 @@ class Webexapi():
         return response
 
 
-    def updateUser(self, **kwargs):
+    def updateUser(self, personid ,daten):
 
-        personID = kwargs.pop("personid")
-        data = {}
+        personID = personid
+        #data = {}
 
-        for key in kwargs:
-            data[key]=kwargs[key]
+        #for key in kwargs:
+        #    data[key]=kwargs[key]
 
-        queryParams = {"callingData:" "true"}
-        jsondata=json.dumps(data)
+        #queryParams = {"callingData:" "true"}
+        jsondata=json.dumps(daten)
 
         response = self.__createRequest("people/"+personID, "PUT", querryData=jsondata)
         print(response)
