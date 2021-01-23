@@ -19,7 +19,7 @@ def auth():
         return render_template("auth.html")
 
 
-apikey="MTBmM2JhNzEtZGExMy00M2VlLWE5OTMtMGY1NmUxNWMxYTBjYjExMmMyZGQtMmMw_PF84_7d2b833a-567c-442f-be92-af5fb4c537be"
+apitoken="NTk5ZmRlZDMtNmE5MS00Mjc2LWI5ZjQtNzIxNWExMTllMTQ0MmI1OTJlYWYtZDNl_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab"
 
 
 #try:
@@ -36,7 +36,9 @@ if __name__=="__main__":
     #app.run()
     controller = Controller()
     controller.leseExcel("/Users/mpludra/OneDrive/03_Techniker Schule/Techniker Arbeit/Kunden-Excel/Kunden-Excel-DRAFT.xlsx")
-    controller.setToken("ZjgzMjYxZjItN2IwNy00N2Q2LTliYWEtOGJlMDZjNjZjODUwZDhiZjhkZmUtMjdm_PF84_7d2b833a-567c-442f-be92-af5fb4c537be")
+    controller.setToken(apitoken)
+
+
 
 
 

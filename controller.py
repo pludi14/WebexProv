@@ -25,7 +25,7 @@ class Controller():
             for datensatz in self.__daten:
                 self.__api.insertUser(datensatz)
 
-    def starteUpdate(self):
+    def starte_Update(self):
         return "Muss noch implentiert werden. controller.starteImport"
 
 
