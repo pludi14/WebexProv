@@ -1,7 +1,46 @@
 {% extends "base.html" %}
 
-{% block title %}Webex Calling Prov{% endblock %}
+{% block title %}WebexProv{% endblock %}
 
 {% block content %}
-<h1>Test</h1>
+
+<div class="container">
+    {% if not status %}
+    <form action="/" method="POST">
+        <div class="form-group">
+            <label for="accessToken">Access Token</label>
+            <input type="text" name="accessToken" class="form-control" id="accessToken"
+                   aria-describedby="Acess Token Help" placeholder="Access Token">
+            <small id="accessTokenHelp" class="form-text text-muted">Access Token über <a
+                    href="https://developer.webex.com" target=”_blank”>developer.webex.com</a> abrufen</small>
+        </div>
+        <button type="submit" class="btn btn-primary"> Prüfe Token</button>
+    </form>
+
+    {% elif status %}
+    <div class="alert alert-success" role="alert">
+        Access Token: {{ token }}
+    </div>
+    <form action="/excelimport" method="POST">
+        <div class="form-group">
+            <div class="form-group input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="orgs">Org ID</label>
+            </div>
+            <select class="custom-select" id="orgs" name="selectedOrg">
+                {% for orga in orgs %}
+                <option value="{{ orga.org_ID }}"> {{ orga.org_Name }} - {{ orga.org_ID }} </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        </div>
+        <button type="submit" class="btn btn-primary">Org auswählen</button>
+    </form>
+    {% else %}
+    {{ super() }}
+    {% endif %}
+
+
+</div>
 {% endblock %}

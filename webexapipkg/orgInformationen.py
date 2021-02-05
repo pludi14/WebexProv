@@ -37,6 +37,9 @@ class OrgInformationen():
     def __getOrg_ID(self): return self.__orgID
     org_ID=property(__getOrg_ID)
 
+    def __getName(self): return self.__orgName
+    org_Name=property(__getName)
+
     def __setOrg_Users(self,x): self.__org_Users =x
     def __getOrg_Users(self): return self.__org_Users
     org_Users=property(__getOrg_Users,__setOrg_Users)

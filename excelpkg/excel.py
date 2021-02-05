@@ -32,6 +32,8 @@ class Excelhandler():
 
 
 
+
+
     def __getAnzahlDatensaetze(self):
         wertvorhanden=True
         zaehler=0
@@ -48,17 +50,20 @@ class Excelhandler():
     def getDaten(self):
         #gibt Daten im gefordeten JSON Format zurück
         daten=[]
-
+        next(self.__alleRows)
         for zeile in self.__alleRows:
-            datensatz={}
-            datensatz["licenses"] = []
-
             if zeile[2].value:
+                datensatz = {}
+                datensatz["licenses"] = []
                 datensatz["firstName"] = zeile[0].value
                 datensatz["lastName"] = zeile[1].value
                 datensatz["displayName"] = zeile[0].value+" "+zeile[1].value
                 datensatz["emails"] = [zeile[2].value]
-                print(datensatz["emails"])
+
+                if self.__checkUserinOrg(datensatz["emails"][0]):
+                    datensatz["doing"]="update"
+                else:
+                    datensatz["doing"]="insert"
 
                 if zeile[5].value and zeile[6].value=="x":
                     #print("meeting + Messaging")
@@ -69,9 +74,20 @@ class Excelhandler():
                 elif zeile[5].value==None and zeile[6].value=="x":
                     #print("Meeting")
                     datensatz["licenses"] = self.__get_correct_Licenses(datensatz["emails"][0],messaging=False, meeting=True)
+                elif zeile[5].value==None and zeile[6].value==None:
+                    #print("Nix von beiden")
+                    datensatz["licenses"] = self.__get_correct_Licenses(datensatz["emails"][0],messaging=False, meeting=False)
+
                 daten.append(datensatz)
-        daten.pop(0)
         return daten
+
+    def __checkUserinOrg(self, usermail):
+        da_nichtda=False
+
+        if usermail in self.__OrgInfo.org_Users:
+            da_nichtda = True
+        return da_nichtda
+
 
 
     def __get_correct_Licenses(self,usermail,messaging=False, meeting=False):
@@ -80,25 +96,26 @@ class Excelhandler():
         messagingLicID=self.__OrgInfo.messaging_lic_ID
         meetingLicID = self.__OrgInfo.meeting_lic_ID
 
-        lics_of_user=self.__OrgInfo.org_Users[usermail]["licenses"]
+        lics_of_user=[]
+
+        if self.__checkUserinOrg(usermail):
+            lics_of_user=self.__OrgInfo.org_Users[usermail]["licenses"]
 
         if messaging and meeting:
-            if meetingLicID not in lics_of_user:
-                lics_of_user.append(meetingLicID)
-            if messagingLicID not in lics_of_user:
-                lics_of_user.append(messagingLicID)
+                if meetingLicID not in lics_of_user: lics_of_user.append(meetingLicID)
+                if messagingLicID not in lics_of_user: lics_of_user.append(messagingLicID)
 
         elif messaging and not meeting:
-            if messagingLicID not in lics_of_user:
-                lics_of_user.append(messagingLicID)
-            if meetingLicID in lics_of_user:
-                lics_of_user.remove(meetingLicID)
+            if messagingLicID not in lics_of_user: lics_of_user.append(messagingLicID)
+            if meetingLicID in lics_of_user: lics_of_user.remove(meetingLicID)
 
         elif meeting and not messaging:
-            if meetingLicID not in lics_of_user:
-                lics_of_user.append(meetingLicID)
-            if messagingLicID in lics_of_user:
-                lics_of_user.remove(messagingLicID)
+            if meetingLicID not in lics_of_user: lics_of_user.append(meetingLicID)
+            if messagingLicID in lics_of_user: lics_of_user.remove(messagingLicID)
+
+        elif not meeting and not messaging:
+            if meetingLicID in lics_of_user: lics_of_user.remove(meetingLicID)
+            if messagingLicID in lics_of_user: lics_of_user.remove(messagingLicID)
 
         return lics_of_user
 

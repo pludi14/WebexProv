@@ -5,12 +5,31 @@ from controller import Controller
 
 app = Flask(__name__, template_folder="./gui/htmlcss/")
 
-controller=None
+controller = Controller()
+accessToken=None
 
-@app.route('/', methods=["POST", "GET"])
+@app.route('/', methods=["GET","POST"])
 def index():
+    if request.method=="POST":
+        form_data = request.form
+        global accessToken
+        accessToken = form_data["accessToken"]
+        controller.setToken(accessToken)
+        return render_template("index.html", status=controller.org_Initialisiert, token=accessToken, orgs=controller.orgs)
     if request.method == "GET":
-        return render_template("index.html")
+        return render_template("index.html", status=controller.org_Initialisiert, token=accessToken, orgs=controller.orgs)
+
+
+@app.route('/excelimport', methods=["GET","POST"])
+def excelImport():
+    if request.method=="GET":
+        return render_template("tokenset.html", token=accessToken, selectedOrg=controller.aktuelle_Org)
+
+    if request.method=="POST":
+        form_data = request.form
+        #print(form_data["selectedOrg"])
+        controller.aktuelle_Org=form_data["selectedOrg"]
+        return render_template("tokenset.html", token=accessToken, selectedOrg=controller.aktuelle_Org)
 
 
 @app.route('/auth', methods=["POST", "GET"])
@@ -33,12 +52,12 @@ apitoken="NThlMzRmMjUtZmU1Zi00OGJiLTg3MjEtMTg4MGJkMTE1NTI5Y2I5MzBjYTQtNTk5_PE93_
 
 
 if __name__=="__main__":
-    #app.run()
-    controller = Controller()
-    controller.setToken(apitoken)
-    controller.aktuelle_Org="Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9mMGNkMDA1OC1lMDhlLTQ3ZjktYTBkNS01OTQwZDZjY2I2YWI"
-    controller.leseExcel("/Users/mpludra/OneDrive/03_Techniker Schule/Techniker Arbeit/Kunden-Excel/Kunden-Excel-DRAFT.xlsx")
-    controller.starte_Update()
+    app.run(debug=True)
+
+    #controller.setToken(apitoken)
+    #controller.aktuelle_Org="Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9mMGNkMDA1OC1lMDhlLTQ3ZjktYTBkNS01OTQwZDZjY2I2YWI"
+    #controller.leseExcel("/Users/mpludra/OneDrive/03_Techniker Schule/Techniker Arbeit/Kunden-Excel/Kunden-Excel-DRAFT.xlsx")
+    #controller.starte_Prozess(update=True,insert=False)
 
 
 
