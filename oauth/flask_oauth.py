@@ -15,7 +15,7 @@ def get_tokens(code):
     """Gets access token and refresh token"""
     print("code:", code)
     url = "https://webexapis.com/v1/access_token"
-    headers = {'accept': 'application/json', 'content-type': 'application/x-www-form-urlencoded'}
+    headers = {'accept': 'application/json', 'content-type': 'application/x-www-form-urlencoded', }
     payload = ("grant_type=authorization_code&client_id={0}&client_secret={1}&"
                "code={2}&redirect_uri={3}").format(clientID, secretID, code, redirectURI)
     req = requests.post(url=url, data=payload, headers=headers)

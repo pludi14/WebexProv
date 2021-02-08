@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/WebexProv.iml" filepath="$PROJECT_DIR$/.idea/WebexProv.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/WebexCallingProv.iml" filepath="$PROJECT_DIR$/.idea/WebexCallingProv.iml" />
     </modules>
   </component>
 </project>

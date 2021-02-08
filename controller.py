@@ -59,7 +59,7 @@ class Controller():
     def starte_Prozess(self,update=False,insert=False):
         if self.__excel_Daten:
             for datensatz in self.__excel_Daten:
-                #print(datensatz)
+                print(datensatz)
                 try:
                     if datensatz["doing"]=="update" and update==True:
                         userid=self.__aktuelleOrg.org_Users[datensatz["emails"][0]]["id"]
@@ -69,8 +69,9 @@ class Controller():
                 except WebexAPIException as e:
                     print("Fehler: " + e.kwargs["text"])
 
-
-
+    def orgReset(self):
+        self.__aktuelleOrg=None
+        self.__orgs=None
 
 
 

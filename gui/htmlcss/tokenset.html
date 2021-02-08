@@ -7,14 +7,19 @@
 <div class="container">
 
     <div class="alert alert-success" role="alert">
-    Access Token: {{ token }}
+        Access Token: {{ token }}
     </div>
 
     <div class="alert alert-success" role="alert">
-    Ausgewählte Org: {{ selectedOrg.org_Name }} - {{ selectedOrg.org_ID }}
+        Ausgewählte Org: {{ selectedOrg.org_Name }} - {{ selectedOrg.org_ID }}
     </div>
 
-    <form action="/" method="POST">
+    {% if exceldatei %}
+    <div class="alert alert-success" role="alert">
+        Excel Datei: {{ exceldatei }}
+    </div>
+
+    <form action="/starteimport" method="POST">
 
         <div class="form-group input-group mb-3">
             <div class="input-group-prepend">
@@ -25,10 +30,22 @@
                 <option value="2">Import</option>
                 <option value="3">Update + Import</option>
             </select>
-        </div>
+            <small id="prozesshelp" class="form-text text-muted">Wenn Directory Connector genutzt wird, können User nur
+                geupdatet werden.</small>
 
-        <div class="form-group custom-file">
-            <input type="file" class="custom-file-input" name="excelFile" id="excelFile" aria-describedby="inputGroupFileAddon04">
+        </div>
+        <button type="submit" class="btn btn-primary">Starte Prozess</button>
+
+    </form>
+
+
+    {% endif %}
+
+    <form action="/readexcel" method="POST" enctype="multipart/form-data">
+
+        <div class="form-group custom-file mb-3">
+            <input type="file" class="custom-file-input" name="excelFile" id="excelFile"
+                   aria-describedby="inputGroupFileAddon04">
             <label class="custom-file-label" for="excelFile">Excel Datei</label>
         </div>
 
