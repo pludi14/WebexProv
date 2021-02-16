@@ -87,7 +87,7 @@ def auth():
         return render_template("auth.html")
 
 
-apitoken="NThlMzRmMjUtZmU1Zi00OGJiLTg3MjEtMTg4MGJkMTE1NTI5Y2I5MzBjYTQtNTk5_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab"
+apitoken="MDBmZTAzZGUtNzg3My00NDVjLWE3MGQtMmU0MjU1Y2JkNDM4NTkxNWYwM2EtN2I1_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab"
 
 
 #try:
@@ -106,14 +106,14 @@ def tempordner_leeren():
     os.mkdir(tempordner)
 
 if __name__=="__main__":
-    tempordner_leeren()
-    app.run(debug=True)
+    #tempordner_leeren()
+    #app.run(debug=True)
 
 
-    #controller.setToken(apitoken)
-    #controller.aktuelle_Org="Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9mMGNkMDA1OC1lMDhlLTQ3ZjktYTBkNS01OTQwZDZjY2I2YWI"
-    #controller.leseExcel("/Users/mpludra/OneDrive/03_Techniker Schule/Techniker Arbeit/Kunden-Excel/Kunden-Excel-DRAFT.xlsx")
-    #controller.starte_Prozess(update=True,insert=False)
+    controller.setToken(apitoken)
+    controller.aktuelle_Org="Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9mMGNkMDA1OC1lMDhlLTQ3ZjktYTBkNS01OTQwZDZjY2I2YWI"
+    controller.leseExcel("/Users/mpludra/OneDrive/03_Techniker Schule/Techniker Arbeit/WebexProv/Kunden-Excel/Kunden-Excel-DRAFT.xlsx")
+    controller.starte_Prozess(update=True,insert=True)
 
 
 

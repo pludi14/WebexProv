@@ -25,7 +25,7 @@ class Excelhandler():
 
     def leseExcel(self, datei=""):
         self.__dateiname = self.__dateiname if self.__dateiname else datei
-        wb = load_workbook(filename=self.__dateiname)
+        wb = load_workbook(filename=self.__dateiname, data_only=True) #Lade Excel. Data Only=Liest Values und nicht die Formeln als Wert aus.
         self.__daten_sheet=wb["Daten"]
         self.__anzahlDatensaetze=self.__getAnzahlDatensaetze()
         self.__alleRows=self.__daten_sheet.rows
