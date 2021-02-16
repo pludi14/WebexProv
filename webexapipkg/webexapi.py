@@ -92,16 +92,12 @@ class Webexapi():
 
 
     def updateUser(self, personid ,daten):
-
         personID = personid
         #data = {}
-
         #for key in kwargs:
         #    data[key]=kwargs[key]
-
         #queryParams = {"callingData:" "true"}
         jsondata=json.dumps(daten)
-
         response = self.__createRequest("people/"+personID, "PUT", querryData=jsondata)
         print(response)
         return response

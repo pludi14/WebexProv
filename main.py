@@ -105,6 +105,8 @@ def tempordner_leeren():
     os.removedirs(tempordner)
     os.mkdir(tempordner)
 
+
+
 if __name__=="__main__":
     #tempordner_leeren()
     #app.run(debug=True)

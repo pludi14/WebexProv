@@ -1,3 +1,4 @@
+from concurrent.futures.thread import ThreadPoolExecutor
 from excelpkg.excel import Excelhandler
 from webexapipkg.webexapi import Webexapi
 from webexapipkg.orgInformationen import OrgInformationen
@@ -57,18 +58,50 @@ class Controller():
 
 
     def starte_Prozess(self,update=False,insert=False):
-        if self.__excel_Daten:
-            for datensatz in self.__excel_Daten:
-                print(datensatz)
 
-                try:
-                    if datensatz["doing"]=="update" and update==True:
-                        userid=self.__aktuelleOrg.org_Users[datensatz["emails"][0]]["id"]
-                        self.__api.updateUser(userid,datensatz)
-                    if datensatz["doing"]=="insert" and insert==True:
-                        self.__api.insertUser(daten=datensatz)
-                except WebexAPIException as e:
-                    print("Fehler: " + e.kwargs["text"])
+        update_user=[]
+        inser_usert=[]
+        for datensatz in self.__excel_Daten:
+            if datensatz["doing"] == "update" and update == True:
+                userid = self.__aktuelleOrg.org_Users[datensatz["emails"][0]]["id"]
+                datensatz["id"]=userid
+                update_user.append(datensatz)
+
+            if datensatz["doing"] == "insert" and insert == True:
+                inser_usert.append(datensatz)
+
+        loop = asyncio.new_event_loop()
+        if update:
+            loop.run_until_complete(self.User_Update(update_user))
+        if insert:
+            loop.run_until_complete(self.User_Import(inser_usert))
+
+
+
+
+
+
+    async def User_Update(self, userdaten):
+        with ThreadPoolExecutor(max_workers=10) as executor:  #Anzahl an gleichzeitiger Requests
+            loop = asyncio.get_event_loop()
+            futures = [
+                loop.run_in_executor(executor, self.__api.updateUser, *(datensatz["id"],datensatz))
+                for datensatz in userdaten
+            ]
+            for response in await asyncio.gather(*futures):
+                print(response)
+
+
+    async def User_Import(self,userdaten):
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            loop = asyncio.get_event_loop()
+            futures = [
+                loop.run_in_executor(executor, self.__api.insertUser, datensatz)
+
+                for datensatz in userdaten
+            ]
+            for response in await asyncio.gather(*futures):
+                print(response)
 
 
     def orgReset(self):
