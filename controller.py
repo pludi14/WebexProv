@@ -56,11 +56,22 @@ class Controller():
 
 
 
+    def delete_User_Prozess(self):
+        delete_user = []
+        for datensatz in self.__excel_Daten:
+            if datensatz["doing"] == "update":
+                userid = self.__aktuelleOrg.org_Users[datensatz["emails"][0]]["id"]
+                datensatz["id"]=userid
+                delete_user.append(datensatz)
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(self.User_Delete(delete_user))
+        loop.close()
 
-    def starte_Prozess(self,update=False,insert=False):
+    def starte_Prozess(self,update=False,insert=False,delete=False):
 
         update_user=[]
         inser_usert=[]
+
         for datensatz in self.__excel_Daten:
             if datensatz["doing"] == "update" and update == True:
                 userid = self.__aktuelleOrg.org_Users[datensatz["emails"][0]]["id"]
@@ -75,10 +86,7 @@ class Controller():
             loop.run_until_complete(self.User_Update(update_user))
         if insert:
             loop.run_until_complete(self.User_Import(inser_usert))
-
-
-
-
+        loop.close()
 
 
     async def User_Update(self, userdaten):
@@ -103,11 +111,20 @@ class Controller():
             for response in await asyncio.gather(*futures):
                 print(response)
 
+    async def User_Delete(self,userdaten):
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            loop = asyncio.get_event_loop()
+            futures = [
+                loop.run_in_executor(executor, self.__api.deleteUser, datensatz["id"])
+
+                for datensatz in userdaten
+            ]
+            for response in await asyncio.gather(*futures):
+                print(response)
 
     def orgReset(self):
         self.__aktuelleOrg=None
         self.__orgs=None
-
 
 
     def setToken(self, token):

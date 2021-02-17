@@ -3,14 +3,19 @@ from controller import Controller
 from webexapipkg.webexAPIException import WebexAPIException
 from werkzeug.utils import secure_filename
 import os
+import shutil
 
 
 app = Flask(__name__, template_folder="./gui/htmlcss/")
 
-tempordner=os.getcwd()+"\\tmp\\"
+tempordner=os.path.join(os.getcwd(), "tmp")
+
 
 controller = Controller()
-accessToken=None
+accessToken="MDQxNzhmMWMtOTQzNS00MjY2LTg2ZmItZmE4NDRjZGVhYjZkZWYzOGY0ZjYtZWY0_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab"
+
+if accessToken:
+    controller.setToken(accessToken)
 
 @app.route('/', methods=["GET","POST"])
 def index():
@@ -59,20 +64,24 @@ def read_excel():
 @app.route('/starteimport', methods=["POST"])
 def starte_Import():
     form_data = request.form
-    print(form_data["prozessoptionen"])
 
-    try:
-        if form_data["prozessoptionen"]==1:
-            controller.starte_Prozess(update=True,insert=False)
-        elif form_data["prozessoptionen"]==2:
-            controller.starte_Prozess(update=False, insert=True)
-        elif form_data["prozessoptionen"]==3:
-            controller.starte_Prozess(update=True, insert=True)
-    except:
-        print("Hier muss eine Exception hin: Controller starte Prozess")
-        return render_template("import.html")
+    if form_data["prozessoptionen"]=="1":
+        #return render_template("import.html")
+        controller.starte_Prozess(update=True,insert=False)
+
+
+    elif form_data["prozessoptionen"]=="2":
+        #return render_template("import.html")
+        controller.starte_Prozess(update=False, insert=True)
+
+
+    elif form_data["prozessoptionen"]=="3":
+        #return render_template("import.html")
+        controller.starte_Prozess(update=True, insert=True)
 
     return render_template("import.html")
+
+
 
 @app.route('/reset', methods=["GET"])
 def tokenreset():
@@ -87,7 +96,7 @@ def auth():
         return render_template("auth.html")
 
 
-apitoken="MDBmZTAzZGUtNzg3My00NDVjLWE3MGQtMmU0MjU1Y2JkNDM4NTkxNWYwM2EtN2I1_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab"
+
 
 
 #try:
@@ -100,22 +109,21 @@ apitoken="MDBmZTAzZGUtNzg3My00NDVjLWE3MGQtMmU0MjU1Y2JkNDM4NTkxNWYwM2EtN2I1_PE93_
 #    print("Fehler: "+e.kwargs["text"])
 
 def tempordner_leeren():
-    for filename in os.listdir(tempordner):
-        os.remove(tempordner+filename)
-    os.removedirs(tempordner)
+    shutil.rmtree(tempordner)
     os.mkdir(tempordner)
 
 
 
 if __name__=="__main__":
-    #tempordner_leeren()
-    #app.run(debug=True)
+    tempordner_leeren()
+    app.run(debug=True)
 
 
-    controller.setToken(apitoken)
-    controller.aktuelle_Org="Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9mMGNkMDA1OC1lMDhlLTQ3ZjktYTBkNS01OTQwZDZjY2I2YWI"
-    controller.leseExcel("/Users/mpludra/OneDrive/03_Techniker Schule/Techniker Arbeit/WebexProv/Kunden-Excel/Kunden-Excel-DRAFT.xlsx")
-    controller.starte_Prozess(update=True,insert=True)
+    #controller.setToken(apitoken)
+    #controller.aktuelle_Org="Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9mMGNkMDA1OC1lMDhlLTQ3ZjktYTBkNS01OTQwZDZjY2I2YWI"
+    #controller.leseExcel("/Users/mpludra/OneDrive/03_Techniker Schule/Techniker Arbeit/WebexProv/Kunden-Excel/Kunden-Excel-DRAFT.xlsx")
+    #controller.delete_User_Prozess()
+    #controller.starte_Prozess(update=True,insert=True)
 
 
 
