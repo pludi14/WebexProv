@@ -12,7 +12,7 @@ tempordner=os.path.join(os.getcwd(), "tmp")
 
 
 controller = Controller()
-accessToken="MDQxNzhmMWMtOTQzNS00MjY2LTg2ZmItZmE4NDRjZGVhYjZkZWYzOGY0ZjYtZWY0_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab"
+accessToken=""
 
 if accessToken:
     controller.setToken(accessToken)
@@ -116,6 +116,7 @@ def tempordner_leeren():
 
 if __name__=="__main__":
     tempordner_leeren()
+    print(tempordner)
     app.run(debug=True)
 
 
