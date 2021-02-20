@@ -22,6 +22,10 @@ class Excelhandler():
     org_Info=property(__getOrg_Info,__setOrg_Info)
 
 
+    def __get_Anzahl_Datenssetze(self): return self.__anzahlDatensaetze
+    anzahl_Datensaetze=property(__get_Anzahl_Datenssetze)
+
+
 
     def leseExcel(self, datei=""):
         self.__dateiname = self.__dateiname if self.__dateiname else datei

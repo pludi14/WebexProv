@@ -49,6 +49,14 @@ class Controller():
     org_Initialisiert = property(__orgsInitialisiert)
 
 
+    def get_Progress(self):
+        prozent=0
+        if self.__excelhandler:
+            #print(self.__excelhandler.anzahl_Datensaetze)
+            #print(self.__api.progress_User)
+            prozent=100/self.__excelhandler.anzahl_Datensaetze*self.__api.progress_User
+        return prozent.__round__()
+
     def leseExcel(self,exceldatei):
         self.__excelhandler=Excelhandler(self.__aktuelleOrg)
         self.__excelhandler.leseExcel(exceldatei)
@@ -96,7 +104,7 @@ class Controller():
                 loop.run_in_executor(executor, self.__api.updateUser, *(datensatz["id"],datensatz))
                 for datensatz in userdaten
             ]
-            for response in await asyncio.gather(*futures):
+            for response in await asyncio.gather(*futures, return_exceptions=True):
                 print(response)
 
 

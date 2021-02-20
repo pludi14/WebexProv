@@ -1,18 +1,20 @@
-from flask import Flask, request, render_template, redirect
+import asyncio
+
+from flask import Flask, request, render_template, redirect, Response
 from controller import Controller
 from webexapipkg.webexAPIException import WebexAPIException
 from werkzeug.utils import secure_filename
 import os
 import shutil
+import time
 
 
 app = Flask(__name__, template_folder="./gui/htmlcss/")
 
 tempordner=os.path.join(os.getcwd(), "tmp")
 
-
 controller = Controller()
-accessToken=""
+accessToken="ZDE3OTU4ZDgtZTU2Yi00NWVjLWIyYzAtNTZjOWE5MGQyNWUxYjZhZDk3MDUtMWNl_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab"
 
 if accessToken:
     controller.setToken(accessToken)
@@ -61,23 +63,26 @@ def read_excel():
             gui_exceldatei=None
         return render_template("tokenset.html", token=accessToken, selectedOrg=controller.aktuelle_Org, exceldatei=gui_exceldatei)
 
-@app.route('/starteimport', methods=["POST"])
+@app.route('/starteimport', methods=["POST","GET"])
 def starte_Import():
-    form_data = request.form
 
-    if form_data["prozessoptionen"]=="1":
-        #return render_template("import.html")
-        controller.starte_Prozess(update=True,insert=False)
+    prozessoption=""
+    if request.form:
+        prozessoption = request.form["prozessoptionen"]
 
+    if prozessoption=="1":
+        return render_template("import.html")
+        controller.starte_Prozess(update=True, insert=False)
+        #controller.starte_Prozess(update=True,insert=False)
 
-    elif form_data["prozessoptionen"]=="2":
+    elif prozessoption=="2":
         #return render_template("import.html")
         controller.starte_Prozess(update=False, insert=True)
 
-
-    elif form_data["prozessoptionen"]=="3":
+    elif prozessoption=="3":
         #return render_template("import.html")
         controller.starte_Prozess(update=True, insert=True)
+
 
     return render_template("import.html")
 
@@ -95,6 +100,16 @@ def auth():
     if request.method == "GET":
         return render_template("auth.html")
 
+
+@app.route('/progress')
+def progress():
+    def generate():
+        x=0
+        while x <= 100:
+            yield "data:" + str(x) + "\n\n"
+            x=controller.get_Progress()
+            time.sleep(0.5)
+    return Response(generate(), mimetype='text/event-stream')
 
 
 
@@ -116,7 +131,6 @@ def tempordner_leeren():
 
 if __name__=="__main__":
     tempordner_leeren()
-    print(tempordner)
     app.run(debug=True)
 
 

@@ -15,11 +15,16 @@ class Webexapi():
         self.__path = pathlib.Path(__file__).parent.absolute()
         self.__workdir = pathlib.Path().absolute()
         self.__referencePath = str(self.__workdir)+"/webexapipkg/reference/"
+        self.__progess_User=0
 
 
     def __setApiToken(self, x): self.__apiToken =x
     def __getApiToken(self): return self.__apiToken
     apiToken=property(__getApiToken, __setApiToken)
+
+    def __get_Progress_User(self): return self.__progess_User
+    progress_User=property(__get_Progress_User)
+
 
     log = logging.getLogger('urllib3')
     log.setLevel(logging.DEBUG)
@@ -99,7 +104,9 @@ class Webexapi():
         #queryParams = {"callingData:" "true"}
         jsondata=json.dumps(daten)
         response = self.__createRequest("people/"+personID, "PUT", querryData=jsondata)
-        print(response)
+        #print(response)
+        self.__progess_User=self.__progess_User+1
+        print(self.__progess_User)
         return response
 
     def getOrgIDs(self):
@@ -125,6 +132,8 @@ class Webexapi():
         return response["items"]
 
 
+    def resetProgress(self):
+        self.__progess_User=0
 
     def parseJSON(self, datei):
         #wird gar nicht genutzt
