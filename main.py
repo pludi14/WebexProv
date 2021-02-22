@@ -14,7 +14,7 @@ app = Flask(__name__, template_folder="./gui/htmlcss/")
 tempordner=os.path.join(os.getcwd(), "tmp")
 
 controller = Controller()
-accessToken="ZDE3OTU4ZDgtZTU2Yi00NWVjLWIyYzAtNTZjOWE5MGQyNWUxYjZhZDk3MDUtMWNl_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab"
+accessToken=""
 
 if accessToken:
     controller.setToken(accessToken)
@@ -55,7 +55,7 @@ def read_excel():
         global gui_exceldatei
         gui_exceldatei=excelfilename
         tempordner_leeren()
-        excel.save(tempordner+excelfilename)
+        excel.save(os.path.join(tempordner, excelfilename))
         try:
             controller.leseExcel(tempordner+excelfilename)
         except:
@@ -132,6 +132,7 @@ def tempordner_leeren():
 if __name__=="__main__":
     tempordner_leeren()
     app.run(debug=True)
+
 
 
     #controller.setToken(apitoken)
