@@ -1,5 +1,3 @@
-import asyncio
-
 from flask import Flask, request, render_template, redirect, Response
 from controller import Controller
 from webexapipkg.webexAPIException import WebexAPIException
@@ -7,17 +5,31 @@ from werkzeug.utils import secure_filename
 import os
 import shutil
 import time
+import logging
+import setup_logger
+import json
+
+logger = logging.getLogger("WP.main")
+logger.info("________Webex Prov gestartet__________")
 
 
 app = Flask(__name__, template_folder="./gui/htmlcss/")
 
 tempordner=os.path.join(os.getcwd(), "tmp")
-
+prozessoption="1"
 controller = Controller()
-accessToken=""
+accessToken="ZDhhMTE5N2EtZDc4NC00ZjIxLWIwMjMtMDU4OTI0ZGU3NzM0MWJhY2QxNzktY2Qw_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab"
+org="Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9mMGNkMDA1OC1lMDhlLTQ3ZjktYTBkNS01OTQwZDZjY2I2YWI"
+excel="/Users/mpludra/OneDrive/03_Techniker Schule/Techniker Arbeit/WebexProv/Kunden-Excel/Kunden-Excel-DRAFT.xlsx"
+
 
 if accessToken:
     controller.setToken(accessToken)
+if org:
+    controller.aktuelle_Org=org
+if excel:
+    controller.leseExcel(excel)
+
 
 @app.route('/', methods=["GET","POST"])
 def index():
@@ -55,9 +67,9 @@ def read_excel():
         global gui_exceldatei
         gui_exceldatei=excelfilename
         tempordner_leeren()
-        excel.save(os.path.join(tempordner, excelfilename))
         try:
-            controller.leseExcel(tempordner+excelfilename)
+            excel.save(os.path.join(tempordner, excelfilename))
+            controller.leseExcel(os.path.join(tempordner, excelfilename))
         except:
             print("Excel konnte nicht eingelesen werden.")
             gui_exceldatei=None
@@ -65,26 +77,35 @@ def read_excel():
 
 @app.route('/starteimport', methods=["POST","GET"])
 def starte_Import():
-
-    prozessoption=""
+    controller.reset_Progress()
+    global prozessoption
     if request.form:
         prozessoption = request.form["prozessoptionen"]
 
-    if prozessoption=="1":
-        return render_template("import.html")
-        controller.starte_Prozess(update=True, insert=False)
-        #controller.starte_Prozess(update=True,insert=False)
-
-    elif prozessoption=="2":
-        #return render_template("import.html")
-        controller.starte_Prozess(update=False, insert=True)
-
-    elif prozessoption=="3":
-        #return render_template("import.html")
-        controller.starte_Prozess(update=True, insert=True)
-
-
     return render_template("import.html")
+
+
+@app.route('/starteprozess', methods=["POST"])
+def starte_Prozess():
+    global prozessoption
+    import_status="None"
+    try:
+        if prozessoption == "1":
+            res=controller.starte_Prozess(update=True, insert=False)
+            import_status = "Update erfolgreich."
+        elif prozessoption == "2":
+            controller.starte_Prozess(update=False, insert=True)
+            import_status = "Insert erfolgreich."
+        elif prozessoption == "3":
+            controller.starte_Prozess(update=True, insert=True)
+            import_status = "Update + Insert erfolgreich."
+
+    except WebexAPIException as e:
+        print("Fehler: "+e.kwargs["text"])
+        return Response(status=200, response="Fehler: "+e.kwargs["text"], mimetype="text/html")
+    res["status"]=import_status
+    resjson=json.dumps(res)
+    return Response(status=200, response=resjson, mimetype='application/json')
 
 
 
@@ -126,13 +147,14 @@ def progress():
 def tempordner_leeren():
     shutil.rmtree(tempordner)
     os.mkdir(tempordner)
+    logger.info("Tempordner geleert.")
 
 
 
 if __name__=="__main__":
+
     tempordner_leeren()
     app.run(debug=True)
-
 
 
     #controller.setToken(apitoken)

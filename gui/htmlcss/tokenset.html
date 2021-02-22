@@ -14,8 +14,22 @@
         Ausgewählte Org: {{ selectedOrg.org_Name }} - {{ selectedOrg.org_ID }}
     </div>
 
+
+
+    <form action="/readexcel" method="POST" enctype="multipart/form-data">
+
+        <div class="form-group custom-file mb-3">
+            <input type="file" class="custom-file-input" name="excelFile" id="excelFile"
+                   aria-describedby="inputGroupFileAddon04">
+            <label class="custom-file-label" for="excelFile">Excel Datei</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary mb-3">Excel einlesen</button>
+
+    </form>
+
     {% if exceldatei %}
-    <div class="alert alert-success" role="alert">
+    <div class="alert alert-success mb-3" role="alert">
         Excel Datei: {{ exceldatei }}
     </div>
 
@@ -27,31 +41,19 @@
             </div>
             <select class="custom-select" id="inputGroupSelect01" name="prozessoptionen">
                 <option value="1" selected>Update</option>
-                <option value="2">Import</option>
-                <option value="3">Update + Import</option>
+                <option value="2">Insert</option>
+                <option value="3">Update + Insert</option>
             </select>
             <small id="prozesshelp" class="form-text text-muted">Wenn Directory Connector genutzt wird, können User nur
                 geupdatet werden.</small>
 
         </div>
-        <button type="submit" class="btn btn-primary">Starte Prozess</button>
+        <button type="submit" class="btn btn-primary">Import</button>
 
     </form>
 
 
     {% endif %}
-
-    <form action="/readexcel" method="POST" enctype="multipart/form-data">
-
-        <div class="form-group custom-file mb-3">
-            <input type="file" class="custom-file-input" name="excelFile" id="excelFile"
-                   aria-describedby="inputGroupFileAddon04">
-            <label class="custom-file-label" for="excelFile">Excel Datei</label>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Excel einlesen</button>
-
-    </form>
 
 
 </div>

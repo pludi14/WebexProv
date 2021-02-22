@@ -4,7 +4,10 @@ from webexapipkg.webexapi import Webexapi
 from webexapipkg.orgInformationen import OrgInformationen
 from webexapipkg.webexAPIException import WebexAPIException
 import asyncio
+import logging
+import setup_logger
 
+logger=logging.getLogger("WP.controller")
 
 class Controller():
     def __init__(self):
@@ -13,6 +16,7 @@ class Controller():
         self.__excel_Daten=None
         self.__orgs=None   #Liste der Orgs
         self.__aktuelleOrg=None
+
 
 
     def __getOrgs(self): return self.__orgs
@@ -57,10 +61,14 @@ class Controller():
             prozent=100/self.__excelhandler.anzahl_Datensaetze*self.__api.progress_User
         return prozent.__round__()
 
+    def reset_Progress(self):
+        self.__api.resetProgress()
+
     def leseExcel(self,exceldatei):
         self.__excelhandler=Excelhandler(self.__aktuelleOrg)
         self.__excelhandler.leseExcel(exceldatei)
         self.__excel_Daten=self.__excelhandler.getDaten()
+        logger.info("Exceldatei eingelesen: "+exceldatei)
 
 
 
@@ -79,6 +87,9 @@ class Controller():
 
         update_user=[]
         inser_usert=[]
+        responses={}
+        responses["update"]=[]
+        responses["insert"]=[]
 
         for datensatz in self.__excel_Daten:
             if datensatz["doing"] == "update" and update == True:
@@ -86,18 +97,24 @@ class Controller():
                 datensatz["id"]=userid
                 update_user.append(datensatz)
 
+
             if datensatz["doing"] == "insert" and insert == True:
                 inser_usert.append(datensatz)
+                logger.debug("User Insert: " +datensatz["emails"][0])
 
         loop = asyncio.new_event_loop()
         if update:
-            loop.run_until_complete(self.User_Update(update_user))
+            res = loop.run_until_complete(self.User_Update(update_user))
+            responses["update"]=res
         if insert:
-            loop.run_until_complete(self.User_Import(inser_usert))
+            res=loop.run_until_complete(self.User_Import(inser_usert))
+            responses["insert"]=res
         loop.close()
+        return responses
 
 
     async def User_Update(self, userdaten):
+        responses=[]
         with ThreadPoolExecutor(max_workers=10) as executor:  #Anzahl an gleichzeitiger Requests
             loop = asyncio.get_event_loop()
             futures = [
@@ -105,10 +122,14 @@ class Controller():
                 for datensatz in userdaten
             ]
             for response in await asyncio.gather(*futures, return_exceptions=True):
-                print(response)
+                responses.append(response)
+
+        return responses
+
 
 
     async def User_Import(self,userdaten):
+        responses = []
         with ThreadPoolExecutor(max_workers=10) as executor:
             loop = asyncio.get_event_loop()
             futures = [
@@ -117,7 +138,8 @@ class Controller():
                 for datensatz in userdaten
             ]
             for response in await asyncio.gather(*futures):
-                print(response)
+                responses.append(response)
+        return responses
 
     async def User_Delete(self,userdaten):
         with ThreadPoolExecutor(max_workers=10) as executor:
@@ -137,6 +159,7 @@ class Controller():
 
     def setToken(self, token):
         self.__api.apiToken=token
+
         asyncio.run(self.__getOrgInformations())
         #self.__getOrgInformations()
 
@@ -153,9 +176,6 @@ class Controller():
             self.__orgs.append(orgInfo)
 
 
-
-if __name__ == '__main__':
-    None
 
 
 

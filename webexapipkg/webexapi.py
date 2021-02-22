@@ -4,9 +4,19 @@ import json
 import os
 import pathlib
 import logging
+import setup_logger
 from http.client import HTTPConnection
 import asyncio
 
+logger = logging.getLogger("WB.webexapi")
+
+# logging from urllib3 to console
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+logger.addHandler(ch)
+# print statements from `http.client.HTTPConnection` to console/stdout
+# Auf 1 setzen für Debug
+HTTPConnection.debuglevel = 0
 
 class Webexapi():
 
@@ -18,26 +28,15 @@ class Webexapi():
         self.__progess_User=0
 
 
+
+
+
     def __setApiToken(self, x): self.__apiToken =x
     def __getApiToken(self): return self.__apiToken
     apiToken=property(__getApiToken, __setApiToken)
 
     def __get_Progress_User(self): return self.__progess_User
     progress_User=property(__get_Progress_User)
-
-
-    log = logging.getLogger('urllib3')
-    log.setLevel(logging.DEBUG)
-
-    # logging from urllib3 to console
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    log.addHandler(ch)
-
-    # print statements from `http.client.HTTPConnection` to console/stdout
-    # Auf 1 setzen für Debug
-    HTTPConnection.debuglevel = 0
-
 
 
 
@@ -57,15 +56,18 @@ class Webexapi():
         if methode=="POST":
             response = requests.post(url=apiUrl, headers=httpHeaders, params=queryParameter, data=querryData)
             responsetext = json.loads(response.text)
-            print(responsetext)
+            #print(responsetext)
         if methode=="DELETE":
             response = requests.delete(url=apiUrl, headers=httpHeaders, params=queryParameter)
             responsetext = json.loads(response.text)
 
-        if response.status_code == 200:
+        if response.status_code == 200 or response.status_code == 204:
+            logger.debug(responsetext)
             return responsetext
+
         else:
-            raise WebexAPIException(statuscode=response.status_code, text=responsetext["message"]);
+            logger.debug("Status Code: "+response.status_code + " " +responsetext)
+            raise WebexAPIException(statuscode=response.status_code, text=responsetext["message"])
 
 
     def get_User(self, **kwargs):
@@ -85,14 +87,14 @@ class Webexapi():
         jsondata = json.dumps(data)
 
         response = self.__createRequest("people", "POST", querryData=jsondata)
-
+        self.__progess_User=self.__progess_User+1
         return response
 
 
     def deleteUser(self, personID=""):
 
         response = self.__createRequest("people/"+personID, "DELETE")
-        print(response)
+        #print(response)
         return response
 
 
@@ -104,9 +106,8 @@ class Webexapi():
         #queryParams = {"callingData:" "true"}
         jsondata=json.dumps(daten)
         response = self.__createRequest("people/"+personID, "PUT", querryData=jsondata)
-        #print(response)
         self.__progess_User=self.__progess_User+1
-        print(self.__progess_User)
+
         return response
 
     def getOrgIDs(self):
