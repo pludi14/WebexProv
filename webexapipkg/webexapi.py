@@ -48,26 +48,30 @@ class Webexapi():
 
         if methode=="GET":
             response = requests.get(url=apiUrl, headers=httpHeaders, params=queryParameter)
-            responsetext = json.loads(response.text)
-            #print(responsetext)
+
         if methode=="PUT":
             response = requests.put(url=apiUrl, headers=httpHeaders, params=queryParameter, data=querryData)
-            responsetext = json.loads(response.text)
+
         if methode=="POST":
             response = requests.post(url=apiUrl, headers=httpHeaders, params=queryParameter, data=querryData)
-            responsetext = json.loads(response.text)
-            #print(responsetext)
+
         if methode=="DELETE":
             response = requests.delete(url=apiUrl, headers=httpHeaders, params=queryParameter)
-            responsetext = json.loads(response.text)
 
-        if response.status_code == 200 or response.status_code == 204:
-            logger.debug(responsetext)
+            #responsetext = json.loads(response.text)
+            print(response.text)
+
+        if response.status_code == 200:
+            #logger.debug(str(responsetext))
+            responsetext = json.loads(response.text)
             return responsetext
 
+        if response.status_code == 204:
+            logger.debug("Response Code 204: Kein Content.")
+
         else:
-            logger.debug("Status Code: "+response.status_code + " " +responsetext)
-            raise WebexAPIException(statuscode=response.status_code, text=responsetext["message"])
+            logger.debug("createRequest Fehler: "+ str(response.status_code) + " " + response.text)
+            raise WebexAPIException(statuscode=response.status_code, text=response.text)
 
 
     def get_User(self, **kwargs):
@@ -91,10 +95,9 @@ class Webexapi():
         return response
 
 
-    def deleteUser(self, personID=""):
-
+    def deleteUser(self, personID):
         response = self.__createRequest("people/"+personID, "DELETE")
-        #print(response)
+        self.__progess_User=self.__progess_User+1
         return response
 
 

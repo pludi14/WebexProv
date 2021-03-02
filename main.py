@@ -16,11 +16,11 @@ logger.info("________Webex Prov gestartet__________")
 app = Flask(__name__, template_folder="./gui/htmlcss/")
 
 tempordner=os.path.join(os.getcwd(), "tmp")
-prozessoption="1"
+prozessoption=""
 controller = Controller()
-accessToken="ZDhhMTE5N2EtZDc4NC00ZjIxLWIwMjMtMDU4OTI0ZGU3NzM0MWJhY2QxNzktY2Qw_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab"
+accessToken="MDc4YTA0ZmItYmYzMy00MTE3LWFkYzYtMTg4ZGMzNjg1NTc2OTAwMjI1NDgtM2Fh_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab"
 org="Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9mMGNkMDA1OC1lMDhlLTQ3ZjktYTBkNS01OTQwZDZjY2I2YWI"
-excel="/Users/mpludra/OneDrive/03_Techniker Schule/Techniker Arbeit/WebexProv/Kunden-Excel/Kunden-Excel-DRAFT.xlsx"
+excel=""
 
 
 if accessToken:
@@ -40,8 +40,8 @@ def index():
         try:
             controller.setToken(accessToken)
         except WebexAPIException as e:
-            print("Fehler: "+e.kwargs["text"])
-
+            logger.info("Fehler: "+e.kwargs["text"])
+            accessToken="Fehler: "+e.kwargs["text"]
         return render_template("index.html", status=controller.org_Initialisiert, token=accessToken, orgs=controller.orgs)
     if request.method == "GET":
         return render_template("index.html", status=controller.org_Initialisiert, token=accessToken, orgs=controller.orgs)
@@ -71,8 +71,8 @@ def read_excel():
             excel.save(os.path.join(tempordner, excelfilename))
             controller.leseExcel(os.path.join(tempordner, excelfilename))
         except:
-            print("Excel konnte nicht eingelesen werden.")
-            gui_exceldatei=None
+            logger.info("Excel Datei konnte nicht eingelesen werden.")
+            gui_exceldatei="Fehler: Excel konnte nicht eingelesen werden."
         return render_template("tokenset.html", token=accessToken, selectedOrg=controller.aktuelle_Org, exceldatei=gui_exceldatei)
 
 @app.route('/starteimport', methods=["POST","GET"])
@@ -89,9 +89,10 @@ def starte_Import():
 def starte_Prozess():
     global prozessoption
     import_status="None"
+
     try:
         if prozessoption == "1":
-            res=controller.starte_Prozess(update=True, insert=False)
+            controller.starte_Prozess(update=True, insert=False)
             import_status = "Update erfolgreich."
         elif prozessoption == "2":
             controller.starte_Prozess(update=False, insert=True)
@@ -99,10 +100,14 @@ def starte_Prozess():
         elif prozessoption == "3":
             controller.starte_Prozess(update=True, insert=True)
             import_status = "Update + Insert erfolgreich."
+        elif prozessoption == "4":
+            controller.starte_Prozess(update=False, insert=False, delete=True)
+            import_status = "Delete erfolgreich."
 
     except WebexAPIException as e:
         print("Fehler: "+e.kwargs["text"])
         return Response(status=200, response="Fehler: "+e.kwargs["text"], mimetype="text/html")
+    res={}
     res["status"]=import_status
     resjson=json.dumps(res)
     return Response(status=200, response=resjson, mimetype='application/json')

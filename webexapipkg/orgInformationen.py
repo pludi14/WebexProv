@@ -10,6 +10,8 @@ class OrgInformationen():
         self.__workspaces={}
         self.__messaging=""
         self.__meeting=""
+        self.__calender=""
+        self.__call=""
         self.__org_Users=None
 
 
@@ -34,6 +36,12 @@ class OrgInformationen():
     def __getMeeting_Lic_ID(self): return self.__meeting
     meeting_lic_ID=property(__getMeeting_Lic_ID)
 
+    def __getCalendar_Lic_ID(self): return self.__calender
+    calendar_lic_ID=property(__getCalendar_Lic_ID)
+
+    def __getCall_Lic_ID(self): return self.__call
+    call_lic_ID=property(__getCall_Lic_ID)
+
     def __getOrg_ID(self): return self.__orgID
     org_ID=property(__getOrg_ID)
 
@@ -52,6 +60,10 @@ class OrgInformationen():
                 self.__messaging=license["id"]
             if license["name"]=="Meeting - Webex Enterprise Edition":
                 self.__meeting=license["id"]
+            if license["name"] == "Hybrid - Exchange Calendar":
+                self.__calender = license["id"]
+            if license["name"] == "Call on Webex":
+                self.__call = license["id"]
 
 
 

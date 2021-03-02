@@ -16,6 +16,7 @@ class Controller():
         self.__excel_Daten=None
         self.__orgs=None   #Liste der Orgs
         self.__aktuelleOrg=None
+        self.__prozessmax=0
 
 
 
@@ -56,13 +57,13 @@ class Controller():
     def get_Progress(self):
         prozent=0
         if self.__excelhandler:
-            #print(self.__excelhandler.anzahl_Datensaetze)
-            #print(self.__api.progress_User)
-            prozent=100/self.__excelhandler.anzahl_Datensaetze*self.__api.progress_User
+            if self.__prozessmax > 0:
+                prozent=100/self.__prozessmax*self.__api.progress_User
         return prozent.__round__()
 
     def reset_Progress(self):
         self.__api.resetProgress()
+        self.__prozessmax=0
 
     def leseExcel(self,exceldatei):
         self.__excelhandler=Excelhandler(self.__aktuelleOrg)
@@ -71,44 +72,50 @@ class Controller():
         logger.info("Exceldatei eingelesen: "+exceldatei)
 
 
-
-    def delete_User_Prozess(self):
-        delete_user = []
-        for datensatz in self.__excel_Daten:
-            if datensatz["doing"] == "update":
-                userid = self.__aktuelleOrg.org_Users[datensatz["emails"][0]]["id"]
-                datensatz["id"]=userid
-                delete_user.append(datensatz)
-        loop = asyncio.new_event_loop()
-        loop.run_until_complete(self.User_Delete(delete_user))
-        loop.close()
-
     def starte_Prozess(self,update=False,insert=False,delete=False):
 
         update_user=[]
-        inser_usert=[]
+        insert_user=[]
+        delete_user=[]
         responses={}
         responses["update"]=[]
         responses["insert"]=[]
-
+        responses["delete"] = []
+        self.__prozessmax=0
         for datensatz in self.__excel_Daten:
+
             if datensatz["doing"] == "update" and update == True:
+
                 userid = self.__aktuelleOrg.org_Users[datensatz["emails"][0]]["id"]
                 datensatz["id"]=userid
                 update_user.append(datensatz)
-
+                self.__prozessmax+=1
+                logger.debug("User Update: " + datensatz["emails"][0])
 
             if datensatz["doing"] == "insert" and insert == True:
-                inser_usert.append(datensatz)
+                insert_user.append(datensatz)
+                self.__prozessmax += 1
                 logger.debug("User Insert: " +datensatz["emails"][0])
+
+            if datensatz["doing"] == "update" and delete==True:
+                userid = self.__aktuelleOrg.org_Users[datensatz["emails"][0]]["id"]
+                datensatz["id"] = userid
+                delete_user.append(datensatz)
+                self.__prozessmax += 1
+                logger.debug("User Delete: " + datensatz["emails"][0])
+
+
 
         loop = asyncio.new_event_loop()
         if update:
             res = loop.run_until_complete(self.User_Update(update_user))
             responses["update"]=res
         if insert:
-            res=loop.run_until_complete(self.User_Import(inser_usert))
+            res=loop.run_until_complete(self.User_Import(insert_user))
             responses["insert"]=res
+        if delete:
+            res = loop.run_until_complete(self.User_Delete(delete_user))
+            responses["delete"] = res
         loop.close()
         return responses
 
@@ -159,9 +166,7 @@ class Controller():
 
     def setToken(self, token):
         self.__api.apiToken=token
-
         asyncio.run(self.__getOrgInformations())
-        #self.__getOrgInformations()
 
 
     async def __getOrgInformations(self):

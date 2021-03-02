@@ -32,6 +32,7 @@
     <div class="alert alert-success mb-3" role="alert">
         Excel Datei: {{ exceldatei }}
     </div>
+    {% endif %}
 
     <form action="/starteimport" method="POST">
 
@@ -43,6 +44,7 @@
                 <option value="1" selected>Update</option>
                 <option value="2">Insert</option>
                 <option value="3">Update + Insert</option>
+                <option value="4">Delete</option>
             </select>
             <small id="prozesshelp" class="form-text text-muted">Wenn Directory Connector genutzt wird, können User nur
                 geupdatet werden.</small>
@@ -53,7 +55,7 @@
     </form>
 
 
-    {% endif %}
+
 
 
 </div>

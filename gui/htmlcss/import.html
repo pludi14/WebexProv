@@ -37,31 +37,31 @@
             });
     }
 
-    function appendData(data) {
-        var div= document.getElementById("jsondata")
-        var table = document.createElement("TABLE")
-        table.setAttribute("class", "table table-hover table-sm")
-        var tablebody = document.getElementById("tablebody");
-
-
-        var updatedata=data.update;
-        var insertdata=data.insert;
-        console.log(updatedata);
-        console.log(insertdata);
-        for (var i = 0; i < updatedata.length; i++) {
-            var tr = document.createElement("tr");
-            var tdmethode = document.createElement("td");
-            var tdmail = document.createElement("td");
-            var tdID = document.createElement("td");
-            tdmethode.innerHTML = "Update";
-            tdmail.innerHTML = updatedata[i].emails;
-            tdID.innerHTML = updatedata.id;
-            tr.appendChild(tdmethode);
-            tablebody.appendChild(tr);
-        }
-        table.appendChild(tablebody)
-        div.appendChild(table)
-    }
+    // function appendData(data) {
+    //     var div= document.getElementById("jsondata")
+    //     var table = document.createElement("TABLE")
+    //     table.setAttribute("class", "table table-hover table-sm")
+    //     var tablebody = document.getElementById("tablebody");
+    //
+    //
+    //     var updatedata=data.update;
+    //     var insertdata=data.insert;
+    //     console.log(updatedata);
+    //     console.log(insertdata);
+    //     for (var i = 0; i < updatedata.length; i++) {
+    //         var tr = document.createElement("tr");
+    //         var tdmethode = document.createElement("td");
+    //         var tdmail = document.createElement("td");
+    //         var tdID = document.createElement("td");
+    //         tdmethode.innerHTML = "Update";
+    //         tdmail.innerHTML = updatedata[i].emails;
+    //         tdID.innerHTML = updatedata.id;
+    //         tr.appendChild(tdmethode);
+    //         tablebody.appendChild(tr);
+    //     }
+    //     table.appendChild(tablebody)
+    //     div.appendChild(table)
+    //}
 </script>
 
 <div class="container mb-2">
@@ -80,7 +80,7 @@
     </div>
 
     <div>
-        <div class="alert alert-success mb-2" role="alert" id="prozesstatus">Inaktiv</div>
+        <div class="alert alert-success mb-2" role="alert" id="prozesstatus">Inaktiv. Bitte Prozess starten.</div>
     </div>
 
     <a href="/import">Zurück</a>
