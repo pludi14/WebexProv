@@ -18,8 +18,8 @@ app = Flask(__name__, template_folder="./gui/htmlcss/")
 tempordner=os.path.join(os.getcwd(), "tmp")
 prozessoption=""
 controller = Controller()
-accessToken=""
-org=""
+accessToken="MDg4NWNmMDYtOTY1Yi00Nzk3LTk2ZDgtZjU2Y2VlZDk3ZDFkNzc4NDVhNWUtYmIx_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab "
+org="Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9mMGNkMDA1OC1lMDhlLTQ3ZjktYTBkNS01OTQwZDZjY2I2YWI"
 excel=""
 
 

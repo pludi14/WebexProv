@@ -9,7 +9,7 @@ class Excelhandler():
         self.__workdir = pathlib.Path().absolute()
         self.__daten_sheet=""
         self.__anzahlDatensaetze=0
-        self.__alleRows=None
+        self.__anzahl_Rows=0
         self.__OrgInfo=orginfo
         # Definiert in welcher Spalte der Excel die einzelnen Werte stehen.
         self.__col_Vorname=1
@@ -19,6 +19,11 @@ class Excelhandler():
         self.__col_Meeting_Lic = 4
         self.__col_Kalender_Lic = 5
         self.__col_Call_Lic = 6
+        #Definiert das Tabellenblatt
+        self.__tabellenblatt="Daten"
+        self.__startrow=2
+        self.__anzahl_Cols=6
+
 
     def __setDateiname(self,x): self.__dateiname =x
     def __getDateiname(self): return self.__dateiname
@@ -30,17 +35,24 @@ class Excelhandler():
     org_Info=property(__getOrg_Info,__setOrg_Info)
 
 
-    def __get_Anzahl_Datenssetze(self): return self.__anzahlDatensaetze
-    anzahl_Datensaetze=property(__get_Anzahl_Datenssetze)
+    def __get_Anzahl_Datensaetze(self): return self.__anzahlDatensaetze
+    anzahl_Datensaetze=property(__get_Anzahl_Datensaetze)
 
 
 
     def leseExcel(self, datei=""):
         self.__dateiname = self.__dateiname if self.__dateiname else datei
         wb = load_workbook(filename=self.__dateiname, data_only=True) #Lade Excel. Data Only=Liest Values und nicht die Formeln als Wert aus.
-        self.__daten_sheet=wb["Daten"]
+        self.__daten_sheet=wb[self.__tabellenblatt]
         self.__anzahlDatensaetze=self.__getAnzahlDatensaetze()
-        self.__alleRows=self.__daten_sheet.rows
+        self.__anzahl_Rows=0
+        for row in self.__daten_sheet.rows:
+            self.__anzahl_Rows+=1
+
+    def lese_Excel_Test(self, datei=""):
+        self.__dateiname = self.__dateiname if self.__dateiname else datei
+        wb = load_workbook(filename=self.__dateiname, data_only=True)  # Lade Excel. Data Only=Liest Values und nicht die Formeln als Wert aus.
+        self.__daten_sheet = wb[self.__tabellenblatt]
 
 
 
@@ -67,8 +79,8 @@ class Excelhandler():
         lics["meeting"] = False
         lics["kalender"] = False
         lics["call"] = False
-        next(self.__alleRows)
-        for zeile in self.__alleRows:
+
+        for zeile in self.__daten_sheet.iter_rows(min_row=self.__startrow, max_col=self.__anzahl_Cols, max_row=self.__anzahl_Rows):
             if zeile[2].value:
                 datensatz = {}
                 datensatz["licenses"] = []
