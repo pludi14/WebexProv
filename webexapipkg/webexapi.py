@@ -7,16 +7,6 @@ import logging
 from setup_logger import logger
 from http.client import HTTPConnection
 
-logger = logging.getLogger("WB.webexapi")
-
-# logging from urllib3 to console
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-logger.addHandler(ch)
-# print statements from `http.client.HTTPConnection` to console/stdout
-# Auf 1 setzen für Debug
-HTTPConnection.debuglevel = 0
-
 class Webexapi():
 
     def __init__(self, apikey=""):
@@ -26,7 +16,15 @@ class Webexapi():
         self.__referencePath = str(self.__workdir)+"/webexapipkg/reference/"
         self.__progess_User=0
 
+    logger = logging.getLogger("WB.webexapi")
 
+    # logging from urllib3 to console
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    logger.addHandler(ch)
+    # print statements from `http.client.HTTPConnection` to console/stdout
+    # Auf 1 setzen für Debug
+    HTTPConnection.debuglevel = 0
 
 
 
