@@ -4,9 +4,8 @@ import json
 import os
 import pathlib
 import logging
-import setup_logger
+from setup_logger import logger
 from http.client import HTTPConnection
-import asyncio
 
 logger = logging.getLogger("WB.webexapi")
 

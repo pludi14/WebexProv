@@ -184,12 +184,3 @@ class Excelhandler():
 
 
 
-
-if __name__=="__main__":
-    handler = Excelhandler()
-    handler.dateiname="Kunden-Excel-DRAFT.xlsx"
-
-    handler.leseExcel()
-    handler.getDaten()
-
-

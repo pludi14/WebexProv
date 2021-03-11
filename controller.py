@@ -1,11 +1,12 @@
+import asyncio
 from concurrent.futures.thread import ThreadPoolExecutor
+import logging
 from excelpkg.excel import Excelhandler
-from webexapipkg.webexapi import Webexapi
 from webexapipkg.orgInformationen import OrgInformationen
 from webexapipkg.webexAPIException import WebexAPIException
-import asyncio
-import logging
-import setup_logger
+from webexapipkg.webexapi import Webexapi
+
+from setup_logger import logger
 
 logger=logging.getLogger("WP.controller")
 
@@ -41,7 +42,8 @@ class Controller():
                 orgUsers[user["emails"][0]] = {"id":user["id"], "licenses":user["licenses"]}
             self.__aktuelleOrg.org_Users=orgUsers
         else:
-            return "Org nicht vorhanden"
+            logger.info("__set_aktuelle_Org: Org ist nicht vorhanden.")
+            raise WebexAPIException(text="__set_aktuelle_Org: Org nicht vorhanden.")
     def __get_aktuelle_Org(self): return self.__aktuelleOrg
     aktuelle_Org=property(__get_aktuelle_Org,__set_aktuelle_Org)
 

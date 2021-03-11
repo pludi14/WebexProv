@@ -6,7 +6,7 @@ import os
 import shutil
 import time
 import logging
-import setup_logger
+from setup_logger import logger
 import json
 
 logger = logging.getLogger("WP.main")
@@ -18,15 +18,18 @@ app = Flask(__name__, template_folder="./gui/htmlcss/")
 tempordner=os.path.join(os.getcwd(), "tmp")
 prozessoption=""
 controller = Controller()
-accessToken="MDc4YTA0ZmItYmYzMy00MTE3LWFkYzYtMTg4ZGMzNjg1NTc2OTAwMjI1NDgtM2Fh_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab"
-org="Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9mMGNkMDA1OC1lMDhlLTQ3ZjktYTBkNS01OTQwZDZjY2I2YWI"
+accessToken=""
+org=""
 excel=""
 
 
 if accessToken:
     controller.setToken(accessToken)
 if org:
-    controller.aktuelle_Org=org
+    try:
+        controller.aktuelle_Org=org
+    except WebexAPIException:
+        logger.info(WebexAPIException.kwargs)
 if excel:
     controller.leseExcel(excel)
 
@@ -51,12 +54,16 @@ def index():
 def excelImport():
     if request.method=="GET":
         return render_template("tokenset.html", token=accessToken, selectedOrg=controller.aktuelle_Org)
+
     if request.method=="POST":
         form_data = request.form
-        controller.aktuelle_Org=form_data["selectedOrg"]
-        if request.files:
-            excel = request.files["excelFile"]
-            excelfilename = secure_filename(excel.filename)  # Sichere Dateinamen (z.B. keine Leerzeichen etc.)
+        try:
+            controller.aktuelle_Org=form_data["selectedOrg"]
+            if request.files:
+                excel = request.files["excelFile"]
+                excelfilename = secure_filename(excel.filename)  # Sichere Dateinamen (z.B. keine Leerzeichen etc.)
+        except WebexAPIException:
+            logger.info("/import"+str(WebexAPIException.kwargs))
         return render_template("tokenset.html", token=accessToken, selectedOrg=controller.aktuelle_Org)
 
 @app.route('/readexcel', methods=["POST"])
