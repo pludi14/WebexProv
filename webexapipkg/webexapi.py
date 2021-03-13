@@ -13,7 +13,6 @@ class Webexapi():
         self.__apiToken = apikey
         self.__path = pathlib.Path(__file__).parent.absolute()
         self.__workdir = pathlib.Path().absolute()
-        self.__referencePath = str(self.__workdir)+"/webexapipkg/reference/"
         self.__progess_User=0
 
     logger = logging.getLogger("WB.webexapi")
@@ -41,7 +40,6 @@ class Webexapi():
         apiUrl = "https://webexapis.com/v1/"+urlZiel
         httpHeaders = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + self.__apiToken}
 
-        #print(apiUrl)
 
         if methode=="GET":
             response = requests.get(url=apiUrl, headers=httpHeaders, params=queryParameter)
@@ -76,19 +74,12 @@ class Webexapi():
         response=self.__createRequest("people", "GET", queryParams)
         return response["items"]
 
-
     def insertUser(self, daten):
-
         data = daten
-
-        #for key in kwargs:
-        #    data[key] = kwargs[key]
-
-        queryParams = {"callingData:" "true"}
+        # queryParams = {"callingData:" "true"}
         jsondata = json.dumps(data)
-
         response = self.__createRequest("people", "POST", querryData=jsondata)
-        self.__progess_User=self.__progess_User+1
+        self.__progess_User = self.__progess_User + 1
         return response
 
 
@@ -135,13 +126,6 @@ class Webexapi():
 
     def resetProgress(self):
         self.__progess_User=0
-
-    def parseJSON(self, datei):
-        #wird gar nicht genutzt
-
-        with open(os.path.join(self.__referencePath,datei)) as file:
-            parsedJSON = json.load(file)
-            return parsedJSON
 
 
 if __name__=="__main__":

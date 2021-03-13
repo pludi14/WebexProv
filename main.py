@@ -18,13 +18,16 @@ app = Flask(__name__, template_folder="./gui/htmlcss/")
 tempordner=os.path.join(os.getcwd(), "tmp")
 prozessoption=""
 controller = Controller()
-accessToken="MDg4NWNmMDYtOTY1Yi00Nzk3LTk2ZDgtZjU2Y2VlZDk3ZDFkNzc4NDVhNWUtYmIx_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab "
+accessToken="MWI5OWUyYjMtZTRiYy00NzE2LWE3N2EtYzAwYzYxYjczNzE3NWVlZmU3ZmItZjBj_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab"
 org="Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9mMGNkMDA1OC1lMDhlLTQ3ZjktYTBkNS01OTQwZDZjY2I2YWI"
 excel=""
 
 
 if accessToken:
-    controller.setToken(accessToken)
+    try:
+        controller.setToken(accessToken)
+    except WebexAPIException as e:
+        logger.info("Fehler: %s", e.kwargs["text"])
 if org:
     try:
         controller.aktuelle_Org=org
@@ -43,8 +46,8 @@ def index():
         try:
             controller.setToken(accessToken)
         except WebexAPIException as e:
-            logger.info("Fehler: "+e.kwargs["text"])
-            accessToken="Fehler: "+e.kwargs["text"]
+            logger.info("Fehler: %s", e.kwargs["text"])
+            accessToken="Fehler: %s", e.kwargs["text"]
         return render_template("index.html", status=controller.org_Initialisiert, token=accessToken, orgs=controller.orgs)
     if request.method == "GET":
         return render_template("index.html", status=controller.org_Initialisiert, token=accessToken, orgs=controller.orgs)
@@ -63,7 +66,7 @@ def excelImport():
                 excel = request.files["excelFile"]
                 excelfilename = secure_filename(excel.filename)  # Sichere Dateinamen (z.B. keine Leerzeichen etc.)
         except WebexAPIException:
-            logger.info("/import"+str(WebexAPIException.kwargs))
+            logger.info("/import %s", str(WebexAPIException.kwargs))
         return render_template("tokenset.html", token=accessToken, selectedOrg=controller.aktuelle_Org)
 
 @app.route('/readexcel', methods=["POST"])
@@ -77,7 +80,7 @@ def read_excel():
         try:
             excel.save(os.path.join(tempordner, excelfilename))
             controller.leseExcel(os.path.join(tempordner, excelfilename))
-        except:
+        except Exception:
             logger.info("Excel Datei konnte nicht eingelesen werden.")
             gui_exceldatei="Fehler: Excel konnte nicht eingelesen werden."
         return render_template("tokenset.html", token=accessToken, selectedOrg=controller.aktuelle_Org, exceldatei=gui_exceldatei)

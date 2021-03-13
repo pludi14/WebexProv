@@ -11,6 +11,7 @@ class Excelhandler():
         self.__anzahlDatensaetze=0
         self.__anzahl_Rows=0
         self.__OrgInfo=orginfo
+
         # Definiert in welcher Spalte der Excel die einzelnen Werte stehen.
         self.__col_Vorname=1
         self.__col_Nachname = 0
@@ -49,14 +50,6 @@ class Excelhandler():
         for row in self.__daten_sheet.rows:
             self.__anzahl_Rows+=1
 
-    def lese_Excel_Test(self, datei=""):
-        self.__dateiname = self.__dateiname if self.__dateiname else datei
-        wb = load_workbook(filename=self.__dateiname, data_only=True)  # Lade Excel. Data Only=Liest Values und nicht die Formeln als Wert aus.
-        self.__daten_sheet = wb[self.__tabellenblatt]
-
-
-
-
 
     def __getAnzahlDatensaetze(self):
         wertvorhanden=True
@@ -94,19 +87,6 @@ class Excelhandler():
                 else:
                     datensatz["doing"]="insert"
 
-                # if zeile[self.__col_Messaging_Lic].value and zeile[self.__col_Meeting_Lic].value=="x":
-                #     #print("meeting + Messaging")
-                #     datensatz["licenses"]=self.__get_correct_Licenses(datensatz["emails"][0],messaging=True,meeting=True)
-                # elif zeile[self.__col_Messaging_Lic].value=="x" and zeile[self.__col_Meeting_Lic].value==None:
-                #     #print("Messaging")
-                #     datensatz["licenses"] = self.__get_correct_Licenses(datensatz["emails"][0],messaging=True, meeting=False)
-                # elif zeile[self.__col_Messaging_Lic].value==None and zeile[self.__col_Meeting_Lic].value=="x":
-                #     #print("Meeting")
-                #     datensatz["licenses"] = self.__get_correct_Licenses(datensatz["emails"][0],messaging=False, meeting=True)
-                # elif zeile[self.__col_Messaging_Lic].value==None and zeile[self.__col_Meeting_Lic].value==None:
-                #     #print("Nix von beiden")
-                #     datensatz["licenses"] = self.__get_correct_Licenses(datensatz["emails"][0],messaging=False, meeting=False)
-
                 if zeile[self.__col_Messaging_Lic].value == "x": lics["messaging"]=True
                 if zeile[self.__col_Meeting_Lic].value == "x": lics["meeting"] = True
                 if zeile[self.__col_Kalender_Lic].value == "x": lics["kalender"] = True
@@ -123,36 +103,6 @@ class Excelhandler():
             da_nichtda = True
         return da_nichtda
 
-
-
-    def __get_correct_Licenses(self,usermail,messaging=False, meeting=False):
-        #gibt die korrekten Lizenzen als Liste zurück
-
-        messagingLicID=self.__OrgInfo.messaging_lic_ID
-        meetingLicID = self.__OrgInfo.meeting_lic_ID
-
-        lics_of_user=[]
-
-        if self.__checkUserinOrg(usermail):
-            lics_of_user=self.__OrgInfo.org_Users[usermail]["licenses"]
-
-        if messaging and meeting:
-                if meetingLicID not in lics_of_user: lics_of_user.append(meetingLicID)
-                if messagingLicID not in lics_of_user: lics_of_user.append(messagingLicID)
-
-        elif messaging and not meeting:
-            if messagingLicID not in lics_of_user: lics_of_user.append(messagingLicID)
-            if meetingLicID in lics_of_user: lics_of_user.remove(meetingLicID)
-
-        elif meeting and not messaging:
-            if meetingLicID not in lics_of_user: lics_of_user.append(meetingLicID)
-            if messagingLicID in lics_of_user: lics_of_user.remove(messagingLicID)
-
-        elif not meeting and not messaging:
-            if meetingLicID in lics_of_user: lics_of_user.remove(meetingLicID)
-            if messagingLicID in lics_of_user: lics_of_user.remove(messagingLicID)
-
-        return lics_of_user
 
     def __set_correct_licenses(self,usermail,lics):
         messaging_LicID = self.__OrgInfo.messaging_lic_ID

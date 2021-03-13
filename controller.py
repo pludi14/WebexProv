@@ -71,7 +71,7 @@ class Controller():
         self.__excelhandler=Excelhandler(self.__aktuelleOrg)
         self.__excelhandler.leseExcel(exceldatei)
         self.__excel_Daten=self.__excelhandler.getDaten()
-        logger.info("Exceldatei eingelesen: "+exceldatei)
+        logger.info("Exceldatei eingelesen: %s", exceldatei)
 
 
     def starte_Prozess(self,update=False,insert=False,delete=False):
@@ -97,32 +97,32 @@ class Controller():
             if datensatz["doing"] == "insert" and insert == True:
                 insert_user.append(datensatz)
                 self.__prozessmax += 1
-                logger.debug("User Insert: " +datensatz["emails"][0])
+                logger.debug("User Insert: %s",datensatz["emails"][0])
 
             if datensatz["doing"] == "update" and delete==True:
                 userid = self.__aktuelleOrg.org_Users[datensatz["emails"][0]]["id"]
                 datensatz["id"] = userid
                 delete_user.append(datensatz)
                 self.__prozessmax += 1
-                logger.debug("User Delete: " + datensatz["emails"][0])
+                logger.debug("User Delete: %s", datensatz["emails"][0])
 
 
 
         loop = asyncio.new_event_loop()
         if update:
-            res = loop.run_until_complete(self.User_Update(update_user))
+            res = loop.run_until_complete(self.__user_Update(update_user))
             responses["update"]=res
         if insert:
-            res=loop.run_until_complete(self.User_Import(insert_user))
+            res=loop.run_until_complete(self.__user_Import(insert_user))
             responses["insert"]=res
         if delete:
-            res = loop.run_until_complete(self.User_Delete(delete_user))
+            res = loop.run_until_complete(self.__user_Delete(delete_user))
             responses["delete"] = res
         loop.close()
         return responses
 
 
-    async def User_Update(self, userdaten):
+    async def __user_Update(self, userdaten):
         responses=[]
         with ThreadPoolExecutor(max_workers=10) as executor:  #Anzahl an gleichzeitiger Requests
             loop = asyncio.get_event_loop()
@@ -137,7 +137,7 @@ class Controller():
 
 
 
-    async def User_Import(self,userdaten):
+    async def __user_Import(self, userdaten):
         responses = []
         with ThreadPoolExecutor(max_workers=10) as executor:
             loop = asyncio.get_event_loop()
@@ -150,7 +150,7 @@ class Controller():
                 responses.append(response)
         return responses
 
-    async def User_Delete(self,userdaten):
+    async def __user_Delete(self, userdaten):
         with ThreadPoolExecutor(max_workers=10) as executor:
             loop = asyncio.get_event_loop()
             futures = [
