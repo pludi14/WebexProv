@@ -4,7 +4,7 @@ import json
 import os
 import pathlib
 import logging
-from setup_logger import logger
+from log.setup_logger import logger
 from http.client import HTTPConnection
 
 class Webexapi():
@@ -14,6 +14,12 @@ class Webexapi():
         self.__path = pathlib.Path(__file__).parent.absolute()
         self.__workdir = pathlib.Path().absolute()
         self.__progess_User=0
+        self.__authUrl = "https://webexapis.com/v1/access_token"
+        self.__clientID = "C945b60582f59d9ebd4c9aa664b316f17f0ca4c85794252b54395bb5ac49fe408"
+        self.__secretID = "f2b3951e610b279bcae0e3dcfc0306627d171873cda6ce018313916d51ccb860"
+        self.__redirectURI = "http://localhost:5000/auth"
+
+
 
     logger = logging.getLogger("WB.webexapi")
 
@@ -36,9 +42,12 @@ class Webexapi():
 
 
 
-    def __createRequest(self, urlZiel, methode, queryParameter={}, querryData=""):
+    def __createRequest(self, urlZiel, methode, queryParameter={}, querryData="", header=""):
         apiUrl = "https://webexapis.com/v1/"+urlZiel
-        httpHeaders = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + self.__apiToken}
+        if header:
+            httpHeaders = header
+        else:
+            httpHeaders = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + self.__apiToken}
 
 
         if methode=="GET":
@@ -122,6 +131,14 @@ class Webexapi():
         querryParams["orgId"] = orgID
         response = self.__createRequest("workspaces", "GET", queryParameter=querryParams)
         return response["items"]
+
+    def getAccessToken(self, authcode):
+
+        payload = ("grant_type=authorization_code&client_id={0}&client_secret={1}&"
+                   "code={2}&redirect_uri={3}").format(self.__clientID, self.__secretID, authcode, self.__redirectURI)
+        headers = {'accept': 'application/json', 'content-type': 'application/x-www-form-urlencoded', }
+        response=self.__createRequest("access_token", "POST", querryData=payload, header=headers)
+        return response["access_token"]
 
 
     def resetProgress(self):

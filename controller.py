@@ -5,8 +5,9 @@ from excelpkg.excel import Excelhandler
 from webexapipkg.orgInformationen import OrgInformationen
 from webexapipkg.webexAPIException import WebexAPIException
 from webexapipkg.webexapi import Webexapi
+import json
 
-from setup_logger import logger
+from log.setup_logger import logger
 
 logger=logging.getLogger("WP.controller")
 
@@ -170,6 +171,15 @@ class Controller():
         self.__api.apiToken=token
         asyncio.run(self.__getOrgInformations())
 
+    def oauth(self, authcode):
+        token=self.__api.getAccessToken(authcode)
+        try:
+            self.setToken(token)
+            with open("Auth/token", "w") as file:
+                file.write(token)
+                file.close()
+        except WebexAPIException as e:
+            logger.info("Fehler: %s", e.kwargs["text"])
 
     async def __getOrgInformations(self):
         self.__orgs=[]

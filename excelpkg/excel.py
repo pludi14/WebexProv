@@ -1,5 +1,10 @@
 from openpyxl import load_workbook
 import pathlib
+import logging
+
+from log.setup_logger import logger
+
+logger=logging.getLogger("WP.excel")
 
 class Excelhandler():
 

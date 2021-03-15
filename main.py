@@ -6,7 +6,7 @@ import os
 import shutil
 import time
 import logging
-from setup_logger import logger
+from log.setup_logger import logger
 import json
 
 logger = logging.getLogger("WP.main")
@@ -18,23 +18,30 @@ app = Flask(__name__, template_folder="./gui/htmlcss/")
 tempordner=os.path.join(os.getcwd(), "tmp")
 prozessoption=""
 controller = Controller()
-accessToken="MWI5OWUyYjMtZTRiYy00NzE2LWE3N2EtYzAwYzYxYjczNzE3NWVlZmU3ZmItZjBj_PE93_f0cd0058-e08e-47f9-a0d5-5940d6ccb6ab"
 org="Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9mMGNkMDA1OC1lMDhlLTQ3ZjktYTBkNS01OTQwZDZjY2I2YWI"
 excel=""
+accessToken=""
 
-
-if accessToken:
+with open("Auth/token") as file:
+    token = file.read()
     try:
-        controller.setToken(accessToken)
+        controller.setToken(token)
+        accessToken=token
+        file.close()
     except WebexAPIException as e:
         logger.info("Fehler: %s", e.kwargs["text"])
+
 if org:
     try:
         controller.aktuelle_Org=org
-    except WebexAPIException:
-        logger.info(WebexAPIException.kwargs)
+    except WebexAPIException as e:
+        logger.info("Fehler: %s", e.kwargs["text"])
+
 if excel:
-    controller.leseExcel(excel)
+    try:
+        controller.leseExcel(excel)
+    except WebexAPIException as e:
+        logger.info("Fehler: %s", e.kwargs["text"])
 
 
 @app.route('/', methods=["GET","POST"])
@@ -115,7 +122,7 @@ def starte_Prozess():
             import_status = "Delete erfolgreich."
 
     except WebexAPIException as e:
-        print("Fehler: "+e.kwargs["text"])
+        logger.info("Fehler: %s", e.kwargs["text"])
         return Response(status=200, response="Fehler: "+e.kwargs["text"], mimetype="text/html")
     res={}
     res["status"]=import_status
@@ -134,7 +141,13 @@ def tokenreset():
 @app.route('/auth', methods=["POST", "GET"])
 def auth():
     if request.method == "GET":
-        return render_template("auth.html")
+        if "code" in request.args and request.args.get("state") == "WebexProv_State":
+            state = request.args.get("state")  # Captures value of the state.
+            code = request.args.get("code")  # Captures value of the code.
+            controller.oauth(code)
+            return redirect("/")
+        else:
+            return render_template("auth.html")
 
 
 @app.route('/progress')
@@ -164,12 +177,12 @@ def tempordner_leeren():
     os.mkdir(tempordner)
     logger.info("Tempordner geleert.")
 
-
-
-if __name__=="__main__":
-
+def main():
     tempordner_leeren()
     app.run(debug=True)
+
+if __name__=="__main__":
+    main()
 
 
     #controller.setToken(apitoken)
