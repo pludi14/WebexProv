@@ -1,6 +1,6 @@
 import logging
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 handler = logging.FileHandler(filename="./logfile.log")
 format = logging.Formatter("%(asctime)s : %(levelname)s : %(name)s : %(message)s")
 

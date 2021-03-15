@@ -5,7 +5,6 @@ from excelpkg.excel import Excelhandler
 from webexapipkg.orgInformationen import OrgInformationen
 from webexapipkg.webexAPIException import WebexAPIException
 from webexapipkg.webexapi import Webexapi
-import json
 
 from log.setup_logger import logger
 
@@ -19,7 +18,6 @@ class Controller():
         self.__orgs=None   #Liste der Orgs
         self.__aktuelleOrg=None
         self.__prozessmax=0
-
 
 
     def __getOrgs(self): return self.__orgs
@@ -76,7 +74,6 @@ class Controller():
 
 
     def starte_Prozess(self,update=False,insert=False,delete=False):
-
         update_user=[]
         insert_user=[]
         delete_user=[]
@@ -106,7 +103,6 @@ class Controller():
                 delete_user.append(datensatz)
                 self.__prozessmax += 1
                 logger.debug("User Delete: %s", datensatz["emails"][0])
-
 
 
         loop = asyncio.new_event_loop()

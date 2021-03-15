@@ -73,13 +73,14 @@ class Excelhandler():
         #gibt Daten im gefordeten JSON Format zurück
         daten=[]
         lics={}
-        lics["messaging"]=False
-        lics["meeting"] = False
-        lics["kalender"] = False
-        lics["call"] = False
+
 
         for zeile in self.__daten_sheet.iter_rows(min_row=self.__startrow, max_col=self.__anzahl_Cols, max_row=self.__anzahl_Rows):
-            if zeile[2].value:
+            lics["messaging"] = False
+            lics["meeting"] = False
+            lics["kalender"] = False
+            lics["call"] = False
+            if zeile[self.__col_Email].value:
                 datensatz = {}
                 datensatz["licenses"] = []
                 datensatz["firstName"] = zeile[self.__col_Vorname].value
