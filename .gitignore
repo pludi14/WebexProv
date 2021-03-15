@@ -3,3 +3,4 @@
 .DS_Store/
 __pycache__/
 .Auth/integration_daten.txt
+./logfile.log
