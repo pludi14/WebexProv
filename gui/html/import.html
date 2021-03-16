@@ -14,13 +14,10 @@
             source.close()
         }
     }
-
 </script>
 <script>
-    // (A) POST WITH FETCH
     function fetchPOST() {
         document.getElementById("prozesstatus").innerHTML = "Prozess gestartet.";
-        // (A2) FETCH
         fetch("/starteprozess", {
             method: 'post'
         })
@@ -30,38 +27,12 @@
             .then(function (data) {
                 console.log(data);
                 document.getElementById("prozesstatus").innerHTML=data.status;
-                appendData(data);
             })
             .catch(function (error) {
                 console.log(error)
             });
     }
 
-    // function appendData(data) {
-    //     var div= document.getElementById("jsondata")
-    //     var table = document.createElement("TABLE")
-    //     table.setAttribute("class", "table table-hover table-sm")
-    //     var tablebody = document.getElementById("tablebody");
-    //
-    //
-    //     var updatedata=data.update;
-    //     var insertdata=data.insert;
-    //     console.log(updatedata);
-    //     console.log(insertdata);
-    //     for (var i = 0; i < updatedata.length; i++) {
-    //         var tr = document.createElement("tr");
-    //         var tdmethode = document.createElement("td");
-    //         var tdmail = document.createElement("td");
-    //         var tdID = document.createElement("td");
-    //         tdmethode.innerHTML = "Update";
-    //         tdmail.innerHTML = updatedata[i].emails;
-    //         tdID.innerHTML = updatedata.id;
-    //         tr.appendChild(tdmethode);
-    //         tablebody.appendChild(tr);
-    //     }
-    //     table.appendChild(tablebody)
-    //     div.appendChild(table)
-    //}
 </script>
 
 <div class="container mb-2">

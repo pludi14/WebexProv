@@ -13,7 +13,7 @@ logger = logging.getLogger("WP.main")
 logger.info("________Webex Prov gestartet__________")
 
 
-app = Flask(__name__, template_folder="./gui/htmlcss/")
+app = Flask(__name__, template_folder="./gui/html/")
 
 tempordner=os.path.join(os.getcwd(), "tmp")
 prozessoption=""
@@ -107,7 +107,6 @@ def starte_Import():
 def starte_Prozess():
     global prozessoption
     import_status="None"
-
     try:
         if prozessoption == "1":
             controller.starte_Prozess(update=True, insert=False)
