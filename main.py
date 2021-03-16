@@ -18,7 +18,7 @@ app = Flask(__name__, template_folder="./gui/htmlcss/")
 tempordner=os.path.join(os.getcwd(), "tmp")
 prozessoption=""
 controller = Controller()
-org="Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9mMGNkMDA1OC1lMDhlLTQ3ZjktYTBkNS01OTQwZDZjY2I2YWI"
+org=""
 excel=""
 accessToken=""
 
@@ -29,6 +29,7 @@ with open("Auth/token") as file:
         accessToken=token
         file.close()
     except WebexAPIException as e:
+        accessToken=e.kwargs["text"]
         logger.info("Fehler: %s", e.kwargs["text"])
 
 if org:
@@ -54,7 +55,7 @@ def index():
             controller.setToken(accessToken)
         except WebexAPIException as e:
             logger.info("Fehler: %s", e.kwargs["text"])
-            accessToken="Fehler: %s", e.kwargs["text"]
+            accessToken=e.kwargs["text"]
         return render_template("index.html", status=controller.org_Initialisiert, token=accessToken, orgs=controller.orgs)
     if request.method == "GET":
         return render_template("index.html", status=controller.org_Initialisiert, token=accessToken, orgs=controller.orgs)
@@ -185,11 +186,6 @@ if __name__=="__main__":
     main()
 
 
-    #controller.setToken(apitoken)
-    #controller.aktuelle_Org="Y2lzY29zcGFyazovL3VzL09SR0FOSVpBVElPTi9mMGNkMDA1OC1lMDhlLTQ3ZjktYTBkNS01OTQwZDZjY2I2YWI"
-    #controller.leseExcel("/Users/mpludra/OneDrive/03_Techniker Schule/Techniker Arbeit/WebexProv/Kunden-Excel/Kunden-Excel-DRAFT.xlsx")
-    #controller.delete_User_Prozess()
-    #controller.starte_Prozess(update=True,insert=True)
 
 
 

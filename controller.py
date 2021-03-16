@@ -80,12 +80,11 @@ class Controller():
         responses={}
         responses["update"]=[]
         responses["insert"]=[]
-        responses["delete"] = []
+        responses["delete"] =[]
         self.__prozessmax=0
         for datensatz in self.__excel_Daten:
 
             if datensatz["doing"] == "update" and update == True:
-
                 userid = self.__aktuelleOrg.org_Users[datensatz["emails"][0]]["id"]
                 datensatz["id"]=userid
                 update_user.append(datensatz)
@@ -164,8 +163,15 @@ class Controller():
 
 
     def setToken(self, token):
-        self.__api.apiToken=token
-        asyncio.run(self.__getOrgInformations())
+        try:
+            self.__api.apiToken=token
+            asyncio.run(self.__getOrgInformations())
+            with open("Auth/token", "w") as file:
+                file.write(token)
+                file.close()
+        except WebexAPIException as e:
+            logger.info("Token konnte nicht gesetzt werden.")
+
 
     def oauth(self, authcode):
         token=self.__api.getAccessToken(authcode)
@@ -178,8 +184,8 @@ class Controller():
             logger.info("Fehler: %s", e.kwargs["text"])
 
     async def __getOrgInformations(self):
-        self.__orgs=[]
         orgIDs= self.__api.getOrgIDs()
+        self.__orgs=[]
         for org in orgIDs:
             orgInfo = OrgInformationen(org["id"],org["displayName"])
             infos = asyncio.gather(self.__api.getLicenseFromOrg(org["id"]), self.__api.getWorkspaces(org["id"])) #Asyncio Task einrichten
