@@ -15,6 +15,7 @@ logger.info("________Webex Prov gestartet__________")
 
 app = Flask(__name__, template_folder="./gui/html/")
 
+authordner=os.path.join(os.getcwd(), "Auth")
 tempordner=os.path.join(os.getcwd(), "tmp")
 prozessoption=""
 controller = Controller()
@@ -22,8 +23,9 @@ org=""
 excel=""
 accessToken=""
 
-with open("Auth/token") as file:
-    token = file.read()
+with open(authordner+"/token") as file:
+    token = file.readline()
+    print(token)
     try:
         controller.setToken(token)
         accessToken=token
