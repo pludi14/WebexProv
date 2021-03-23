@@ -5,3 +5,4 @@ __pycache__/
 .Auth/integration_daten.txt
 ./logfile.log
 /logfile.log
+/Auth/integration_daten.txt
