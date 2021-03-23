@@ -180,7 +180,7 @@ def tempordner_leeren():
 
 def main():
     tempordner_leeren()
-    app.run(debug=True)
+    app.run(debug=False)
 
 if __name__=="__main__":
     main()
