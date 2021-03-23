@@ -171,6 +171,8 @@ class Controller():
                 file.close()
         except WebexAPIException as e:
             logger.info("Token konnte nicht gesetzt werden.")
+            raise e
+
 
 
     def oauth(self, authcode):

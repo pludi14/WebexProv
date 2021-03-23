@@ -25,7 +25,6 @@ accessToken=""
 
 with open(authordner+"/token") as file:
     token = file.readline()
-    print(token)
     try:
         controller.setToken(token)
         accessToken=token

@@ -62,11 +62,8 @@ class Webexapi():
         if methode=="DELETE":
             response = requests.delete(url=apiUrl, headers=httpHeaders, params=queryParameter)
 
-            #responsetext = json.loads(response.text)
-            print(response.text)
 
         if response.status_code == 200:
-            #logger.debug(str(responsetext))
             responsetext = json.loads(response.text)
             return responsetext
 
