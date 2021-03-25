@@ -52,9 +52,9 @@ class OrgInformationen():
     def __getOrg_Users(self): return self.__org_Users
     org_Users=property(__getOrg_Users,__setOrg_Users)
 
-
+    # setzt die ID für die Lizenztypen
     def __setLicenseTypes(self):
-        #setzt die ID für die Lizenztypen
+
         for license in self.__lizenztypen:
             if license["name"]=="Messaging":
                 self.__messaging=license["id"]

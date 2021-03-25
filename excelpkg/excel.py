@@ -1,10 +1,9 @@
 from openpyxl import load_workbook
 import pathlib
 import logging
-
 from log.setup_logger import logger
 
-logger=logging.getLogger("WP.excel")
+
 
 class Excelhandler():
 
@@ -30,6 +29,7 @@ class Excelhandler():
         self.__startrow=2
         self.__anzahl_Cols=6
 
+    logger = logging.getLogger("WP.excel")
 
     def __setDateiname(self,x): self.__dateiname =x
     def __getDateiname(self): return self.__dateiname
@@ -45,7 +45,7 @@ class Excelhandler():
     anzahl_Datensaetze=property(__get_Anzahl_Datensaetze)
 
 
-
+    #Liest die Exce Datei ein.
     def leseExcel(self, datei=""):
         self.__dateiname = self.__dateiname if self.__dateiname else datei
         wb = load_workbook(filename=self.__dateiname, data_only=True) #Lade Excel. Data Only=Liest Values und nicht die Formeln als Wert aus.
@@ -69,8 +69,9 @@ class Excelhandler():
                 row=row+1
         return zaehler
 
+    # gibt Daten im gefordeten JSON Format zurück
     def getDaten(self):
-        #gibt Daten im gefordeten JSON Format zurück
+
         daten=[]
         lics={}
 
@@ -101,7 +102,7 @@ class Excelhandler():
 
                 daten.append(datensatz)
         return daten
-
+    # Prüft ob dier User in der ausgewählten Org ist
     def __checkUserinOrg(self, usermail):
         da_nichtda=False
 
@@ -109,7 +110,7 @@ class Excelhandler():
             da_nichtda = True
         return da_nichtda
 
-
+    # Setzt die korreketen LizenzIDs für den Benuterz
     def __set_correct_licenses(self,usermail,lics):
         messaging_LicID = self.__OrgInfo.messaging_lic_ID
         meeting_LicID = self.__OrgInfo.meeting_lic_ID

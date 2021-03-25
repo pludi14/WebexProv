@@ -1,12 +1,12 @@
 import requests
 from webexapipkg.webexAPIException import WebexAPIException
 import json
-import os
 import pathlib
 import logging
 from log.setup_logger import logger
 from http.client import HTTPConnection
 
+#Webexapi Klasse
 class Webexapi():
 
     def __init__(self, apikey=""):
@@ -18,6 +18,7 @@ class Webexapi():
         self.__clientID = "C945b60582f59d9ebd4c9aa664b316f17f0ca4c85794252b54395bb5ac49fe408"
         self.__secretID = "f2b3951e610b279bcae0e3dcfc0306627d171873cda6ce018313916d51ccb860"
         self.__redirectURI = "http://localhost:5000/auth"
+        self.__plattformURI= "https://webexapis.com/v1/"
 
 
 
@@ -41,9 +42,9 @@ class Webexapi():
     progress_User=property(__get_Progress_User)
 
 
-
+    #Requests werden hier zusammengebaut und an die Plattform gesendet.
     def __createRequest(self, urlZiel, methode, queryParameter={}, querryData="", header=""):
-        apiUrl = "https://webexapis.com/v1/"+urlZiel
+        apiUrl = self.__plattformURI+urlZiel
         if header:
             httpHeaders = header
         else:
@@ -74,12 +75,13 @@ class Webexapi():
             logger.debug("createRequest Fehler: "+ str(response.status_code) + " " + response.text)
             raise WebexAPIException(statuscode=response.status_code, text=response.text)
 
-
+    #Liest alle Benutzer aus
     def get_User(self, **kwargs):
         queryParams = kwargs if kwargs else {}
         response=self.__createRequest("people", "GET", queryParams)
         return response["items"]
 
+    # Neuen Benutzer hinzufügen
     def insertUser(self, daten):
         data = daten
         # queryParams = {"callingData:" "true"}
@@ -88,13 +90,13 @@ class Webexapi():
         self.__progess_User = self.__progess_User + 1
         return response
 
-
+    # Benutzer löschen
     def deleteUser(self, personID):
         response = self.__createRequest("people/"+personID, "DELETE")
         self.__progess_User=self.__progess_User+1
         return response
 
-
+    # Benutzer aktualisieren
     def updateUser(self, personid ,daten):
         personID = personid
         #data = {}
@@ -107,28 +109,33 @@ class Webexapi():
 
         return response
 
+    # Alle OrgIDs des Administrators auslesen
     def getOrgIDs(self):
         response = self.__createRequest("organizations", "GET")
         return response["items"]
 
+    # LizenzIDs der Org auslesen
     async def getLicenseFromOrg(self, orgID=""):
         querryParams={}
         querryParams["orgId"]=orgID
         response=self.__createRequest("licenses", "GET", queryParameter=querryParams)
         return response["items"]
 
+    # Neues Device hinzufügen
     def insertDevice(self, placeID):
         querryParams={}
         querryParams["placeId"]=placeID
         response=self.__createRequest("devices/activaionCode","POST",queryParameter=querryParams)
         #return activationCode
 
+    # Workspaces der Org auslesen
     async def getWorkspaces(self,orgID=""):
         querryParams = {}
         querryParams["orgId"] = orgID
         response = self.__createRequest("workspaces", "GET", queryParameter=querryParams)
         return response["items"]
 
+    # OAuth2.0: Token vom Authoriztion Server abholen
     def getAccessToken(self, authcode):
 
         payload = ("grant_type=authorization_code&client_id={0}&client_secret={1}&"
@@ -137,13 +144,10 @@ class Webexapi():
         response=self.__createRequest("access_token", "POST", querryData=payload, header=headers)
         return response["access_token"]
 
-
+    # Progress für den Prozessladebalken reseten
     def resetProgress(self):
         self.__progess_User=0
 
-
-if __name__=="__main__":
-    api=Webexapi(apikey="ZmVhN2NhODItMmRkYi00OWQ1LThlMjAtNmQxMWE5N2Y3ZDBjN2MwNDc1NGItMmVm_PF84_7d2b833a-567c-442f-be92-af5fb4c537be")
 
 
 

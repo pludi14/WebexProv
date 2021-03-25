@@ -5,11 +5,11 @@ from excelpkg.excel import Excelhandler
 from webexapipkg.orgInformationen import OrgInformationen
 from webexapipkg.webexAPIException import WebexAPIException
 from webexapipkg.webexapi import Webexapi
-
 from log.setup_logger import logger
 
-logger=logging.getLogger("WP.controller")
 
+
+# Klasse Controller
 class Controller():
     def __init__(self):
         self.__api=Webexapi()
@@ -19,11 +19,12 @@ class Controller():
         self.__aktuelleOrg=None
         self.__prozessmax=0
 
+    logger = logging.getLogger("WP.controller")
 
     def __getOrgs(self): return self.__orgs
     orgs=property(__getOrgs)
 
-
+    # Aktuell ausgewählte Org setzen und alle Benutzer auslesen.
     def __set_aktuelle_Org(self,id):
         # Hier wird die aktuell ausgewählte Org gesetzt. Prüfun gob OrgID vorhanden ist
         # + Aller User der Org in Dict self.__aktuelleOrgUserIDs geladen.
@@ -46,7 +47,6 @@ class Controller():
     def __get_aktuelle_Org(self): return self.__aktuelleOrg
     aktuelle_Org=property(__get_aktuelle_Org,__set_aktuelle_Org)
 
-
     def __orgsInitialisiert(self):
         if self.__orgs==None:
             return False
@@ -54,7 +54,7 @@ class Controller():
             return True
     org_Initialisiert = property(__orgsInitialisiert)
 
-
+    # Berechnet den aktuellen Prozesstatus für den Ladebalken in Prozent
     def get_Progress(self):
         prozent=0
         if self.__excelhandler:
@@ -62,17 +62,19 @@ class Controller():
                 prozent=100/self.__prozessmax*self.__api.progress_User
         return prozent.__round__()
 
+    # Resettet den aktuellen Prozessstatus
     def reset_Progress(self):
         self.__api.resetProgress()
         self.__prozessmax=0
 
+    # Liest Ecel Datei ein.
     def leseExcel(self,exceldatei):
         self.__excelhandler=Excelhandler(self.__aktuelleOrg)
         self.__excelhandler.leseExcel(exceldatei)
         self.__excel_Daten=self.__excelhandler.getDaten()
         logger.info("Exceldatei eingelesen: %s", exceldatei)
 
-
+    # Startet den Importprozess
     def starte_Prozess(self,update=False,insert=False,delete=False):
         update_user=[]
         insert_user=[]
@@ -117,7 +119,7 @@ class Controller():
         loop.close()
         return responses
 
-
+    # Benutzer aktualisiren für den Importprozess: starte_Prozess
     async def __user_Update(self, userdaten):
         responses=[]
         with ThreadPoolExecutor(max_workers=10) as executor:  #Anzahl an gleichzeitiger Requests
@@ -131,8 +133,7 @@ class Controller():
 
         return responses
 
-
-
+    # Benutzer Import für den Importprozess: starte_Prozess
     async def __user_Import(self, userdaten):
         responses = []
         with ThreadPoolExecutor(max_workers=10) as executor:
@@ -146,6 +147,7 @@ class Controller():
                 responses.append(response)
         return responses
 
+    # Benutzer Löschen für den Importprozess: starte_Prozess
     async def __user_Delete(self, userdaten):
         with ThreadPoolExecutor(max_workers=10) as executor:
             loop = asyncio.get_event_loop()
@@ -157,11 +159,12 @@ class Controller():
             for response in await asyncio.gather(*futures):
                 print(response)
 
+    # Resettet die aktuell ausgewählte Org und die Liste von Orgs
     def orgReset(self):
         self.__aktuelleOrg=None
         self.__orgs=None
 
-
+    # Setzt den API Token und liest die Orgs ein: __getOrgInformations()
     def setToken(self, token):
         try:
             self.__api.apiToken=token
@@ -174,7 +177,7 @@ class Controller():
             raise e
 
 
-
+    # OAuth 2.0. Triggert die Abfrage deas Acces Tokens an
     def oauth(self, authcode):
         token=self.__api.getAccessToken(authcode)
         try:
@@ -185,6 +188,7 @@ class Controller():
         except WebexAPIException as e:
             logger.info("Fehler: %s", e.kwargs["text"])
 
+    # Liest alle OrgIDs zum Administrator aus.
     async def __getOrgInformations(self):
         orgIDs= self.__api.getOrgIDs()
         self.__orgs=[]

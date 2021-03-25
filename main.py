@@ -23,6 +23,7 @@ org=""
 excel=""
 accessToken=""
 
+#liest den Token aus der Datei auth/token aus.
 with open(authordner+"/token") as file:
     token = file.readline()
     try:
@@ -33,19 +34,15 @@ with open(authordner+"/token") as file:
         accessToken=e.kwargs["text"]
         logger.info("Fehler: %s", e.kwargs["text"])
 
+#Org wird schon ausgewählt wenn die Varible oben befüllt ist.
 if org:
     try:
         controller.aktuelle_Org=org
     except WebexAPIException as e:
         logger.info("Fehler: %s", e.kwargs["text"])
 
-if excel:
-    try:
-        controller.leseExcel(excel)
-    except WebexAPIException as e:
-        logger.info("Fehler: %s", e.kwargs["text"])
 
-
+#Flask Route: Einstiegsseite index.html
 @app.route('/', methods=["GET","POST"])
 def index():
     if request.method=="POST":
@@ -61,7 +58,7 @@ def index():
     if request.method == "GET":
         return render_template("index.html", status=controller.org_Initialisiert, token=accessToken, orgs=controller.orgs)
 
-
+#Flask Route: Excel auswählen und Prozessoption auswählen. tokenset.html
 @app.route('/import', methods=["GET","POST"])
 def excelImport():
     if request.method=="GET":
@@ -78,6 +75,7 @@ def excelImport():
             logger.info("/import %s", str(WebexAPIException.kwargs))
         return render_template("tokenset.html", token=accessToken, selectedOrg=controller.aktuelle_Org)
 
+#Flask Route: Excel Datei wird hier per POST angenommen und eingelesen.
 @app.route('/readexcel', methods=["POST"])
 def read_excel():
     if request.files:
@@ -94,16 +92,18 @@ def read_excel():
             gui_exceldatei="Fehler: Excel konnte nicht eingelesen werden."
         return render_template("tokenset.html", token=accessToken, selectedOrg=controller.aktuelle_Org, exceldatei=gui_exceldatei)
 
+#Flask Route: Hier wird die Prozessoption angenommen und die Import Seite angezeigt.
 @app.route('/starteimport', methods=["POST","GET"])
 def starte_Import():
     controller.reset_Progress()
+
     global prozessoption
     if request.form:
         prozessoption = request.form["prozessoptionen"]
 
     return render_template("import.html")
 
-
+#Flask Route: Prozess wird hier gestartet.
 @app.route('/starteprozess', methods=["POST"])
 def starte_Prozess():
     global prozessoption
@@ -131,14 +131,14 @@ def starte_Prozess():
     return Response(status=200, response=resjson, mimetype='application/json')
 
 
-
+#Flask Route: Tokenreset.
 @app.route('/reset', methods=["GET"])
 def tokenreset():
     controller.orgReset()
     return redirect("/")
 
 
-
+#Flask Route: OAuth2.0 authentifizierung
 @app.route('/auth', methods=["POST", "GET"])
 def auth():
     if request.method == "GET":
@@ -150,7 +150,7 @@ def auth():
         else:
             return render_template("auth.html")
 
-
+#Flask Route: Hier wird der aktuelle Importprozesstatus übergeben
 @app.route('/progress')
 def progress():
     def generate():
@@ -162,22 +162,13 @@ def progress():
     return Response(generate(), mimetype='text/event-stream')
 
 
-
-
-#try:
-    #api.updateUser(personid="Y2lzY29zcGFyazovL3VzL1BFT1BMRS9iOGUwMWNjOS04OWM0LTQ1OTAtOWUxMS03NTU4NmVlNWQ5YmE", displayName="Bastian Schweinsteiger", licenses=["Y2lzY29zcGFyazovL3VzL0xJQ0VOU0UvN2QyYjgzM2EtNTY3Yy00NDJmLWJlOTItYWY1ZmI0YzUzN2JlOkVFXzQ5OGM3Zjg1LWZhMzUtNDM1ZC05OWVjLWE2ZWEyYTE5OGY3ZV9tYXJjZWxwbHVkcmEtZ2FzYW5kYm94LndlYmV4LmNvbQ"])
-    #api.insertUser(emails=["testuser@solution-mp.de"], displayName="test User")
-    #api.deleteUser(personID="Y2lzY29zcGFyazovL3VzL1BFT1BMRS9iOGUwMWNjOS04OWM0LTQ1OTAtOWUxMS03NTU4NmVlNWQ5YmE")
-    #api.listUser()
-
-#except WebexAPIException as e:
-#    print("Fehler: "+e.kwargs["text"])
-
+#leert den Tempordner wo die Excel Dateien temporär abgespeichert werden
 def tempordner_leeren():
     shutil.rmtree(tempordner)
     os.mkdir(tempordner)
     logger.info("Tempordner geleert.")
 
+#Wird beim Starten des Programms ausgeführt.
 def main():
     tempordner_leeren()
     app.run(debug=False)
