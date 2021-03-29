@@ -3,7 +3,7 @@ import pathlib
 import logging
 from log.setup_logger import logger
 
-
+logger = logging.getLogger("WP.excel")
 
 class Excelhandler():
 
@@ -29,7 +29,7 @@ class Excelhandler():
         self.__startrow=2
         self.__anzahl_Cols=6
 
-    logger = logging.getLogger("WP.excel")
+
 
     def __setDateiname(self,x): self.__dateiname =x
     def __getDateiname(self): return self.__dateiname

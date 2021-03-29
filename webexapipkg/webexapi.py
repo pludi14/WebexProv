@@ -6,6 +6,8 @@ import logging
 from log.setup_logger import logger
 from http.client import HTTPConnection
 
+logger = logging.getLogger("WB.webexapi")
+
 #Webexapi Klasse
 class Webexapi():
 
@@ -22,15 +24,15 @@ class Webexapi():
 
 
 
-    logger = logging.getLogger("WB.webexapi")
+
 
     # logging from urllib3 to console
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    logger.addHandler(ch)
+    #ch = logging.StreamHandler()
+    #ch.setLevel(logging.DEBUG)
+    #logger.addHandler(ch)
     # print statements from `http.client.HTTPConnection` to console/stdout
     # Auf 1 setzen für Debug
-    HTTPConnection.debuglevel = 0
+    #HTTPConnection.debuglevel = 0
 
 
 
@@ -72,7 +74,11 @@ class Webexapi():
             logger.debug("Response Code 204: Kein Content.")
 
         else:
-            logger.debug("createRequest Fehler: "+ str(response.status_code) + " " + response.text)
+            responsetext = json.loads(response.text)
+            if methode=="PUT" or methode=="POST" or methode=="DELETE":
+                logger.info("createRequest Fehler: " + str(response.status_code) + " " + responsetext["message"] +" "+ querryData +" "+ urlZiel)
+            else:
+                logger.info("createRequest Fehler: "+ str(response.status_code) + " " + response.text)
             raise WebexAPIException(statuscode=response.status_code, text=response.text)
 
     #Liest alle Benutzer aus

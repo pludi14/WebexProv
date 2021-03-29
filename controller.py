@@ -7,6 +7,7 @@ from webexapipkg.webexAPIException import WebexAPIException
 from webexapipkg.webexapi import Webexapi
 from log.setup_logger import logger
 
+logger = logging.getLogger("WP.controller")
 
 
 # Klasse Controller
@@ -19,7 +20,7 @@ class Controller():
         self.__aktuelleOrg=None
         self.__prozessmax=0
 
-    logger = logging.getLogger("WP.controller")
+
 
     def __getOrgs(self): return self.__orgs
     orgs=property(__getOrgs)
@@ -41,11 +42,13 @@ class Controller():
             for user in orgUserResponse:
                 orgUsers[user["emails"][0]] = {"id":user["id"], "licenses":user["licenses"]}
             self.__aktuelleOrg.org_Users=orgUsers
+            logger.info("Aktuelle Org gesetzt.")
         else:
             logger.info("__set_aktuelle_Org: Org ist nicht vorhanden.")
             raise WebexAPIException(text="__set_aktuelle_Org: Org nicht vorhanden.")
     def __get_aktuelle_Org(self): return self.__aktuelleOrg
     aktuelle_Org=property(__get_aktuelle_Org,__set_aktuelle_Org)
+
 
     def __orgsInitialisiert(self):
         if self.__orgs==None:
@@ -169,11 +172,13 @@ class Controller():
         try:
             self.__api.apiToken=token
             asyncio.run(self.__getOrgInformations())
+            logger.info("Access Token gesetzt und Orgs erfolgreich ausgelesen.")
             with open("Auth/token", "w") as file:
                 file.write(token)
                 file.close()
+
         except WebexAPIException as e:
-            logger.info("Token konnte nicht gesetzt werden.")
+            logger.info("Access Token konnte nicht gesetzt werden.")
             raise e
 
 
@@ -185,6 +190,7 @@ class Controller():
             with open("Auth/token", "w") as file:
                 file.write(token)
                 file.close()
+            return token
         except WebexAPIException as e:
             logger.info("Fehler: %s", e.kwargs["text"])
 

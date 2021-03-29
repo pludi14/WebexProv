@@ -9,7 +9,9 @@ import logging
 from log.setup_logger import logger
 import json
 
+
 logger = logging.getLogger("WP.main")
+
 logger.info("________Webex Prov gestartet__________")
 
 
@@ -108,6 +110,7 @@ def starte_Import():
 def starte_Prozess():
     global prozessoption
     import_status="None"
+    res = {}
     try:
         if prozessoption == "1":
             controller.starte_Prozess(update=True, insert=False)
@@ -122,11 +125,15 @@ def starte_Prozess():
             controller.starte_Prozess(update=False, insert=False, delete=True)
             import_status = "Delete erfolgreich."
 
+
     except WebexAPIException as e:
-        logger.info("Fehler: %s", e.kwargs["text"])
-        return Response(status=200, response="Fehler: "+e.kwargs["text"], mimetype="text/html")
-    res={}
+        logger.info("Fehler beim Prozess.")
+        res["status"] = "Fehler beim Prozess. Bitte überprüfen Sie die Log Datei."
+        resjson = json.dumps(res)
+        return Response(status=200, response=resjson, mimetype="text/html")
+
     res["status"]=import_status
+    logger.info(import_status)
     resjson=json.dumps(res)
     return Response(status=200, response=resjson, mimetype='application/json')
 
@@ -141,11 +148,13 @@ def tokenreset():
 #Flask Route: OAuth2.0 authentifizierung
 @app.route('/auth', methods=["POST", "GET"])
 def auth():
+    global accessToken
     if request.method == "GET":
         if "code" in request.args and request.args.get("state") == "WebexProv_State":
             state = request.args.get("state")  # Captures value of the state.
             code = request.args.get("code")  # Captures value of the code.
-            controller.oauth(code)
+            token=controller.oauth(code)
+            accessToken = token
             return redirect("/")
         else:
             return render_template("auth.html")
@@ -171,7 +180,9 @@ def tempordner_leeren():
 #Wird beim Starten des Programms ausgeführt.
 def main():
     tempordner_leeren()
+    logging.getLogger("werkzeug").setLevel(logging.CRITICAL)
     app.run(debug=False)
+
 
 if __name__=="__main__":
     main()
