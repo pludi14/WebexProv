@@ -78,7 +78,7 @@ class Webexapi():
             if methode=="PUT" or methode=="POST" or methode=="DELETE":
                 logger.info("createRequest Fehler: " + str(response.status_code) + " " + responsetext["message"] +" "+ querryData +" "+ urlZiel)
             else:
-                logger.info("createRequest Fehler: "+ str(response.status_code) + " " + response.text)
+                logger.info("createRequest Fehler: "+ str(response.status_code) + " " + responsetext["message"])
             raise WebexAPIException(statuscode=response.status_code, text=response.text)
 
     #Liest alle Benutzer aus

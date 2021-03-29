@@ -172,7 +172,7 @@ class Controller():
         try:
             self.__api.apiToken=token
             asyncio.run(self.__getOrgInformations())
-            logger.info("Access Token gesetzt und Orgs erfolgreich ausgelesen.")
+            logger.info("Access Token gesetzt und Orgs erfolgreich ausgelesen. Falsch oder nicht verfügbar.")
             with open("Auth/token", "w") as file:
                 file.write(token)
                 file.close()

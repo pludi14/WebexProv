@@ -33,8 +33,7 @@ with open(authordner+"/token") as file:
         accessToken=token
         file.close()
     except WebexAPIException as e:
-        accessToken=e.kwargs["text"]
-        logger.info("Fehler: %s", e.kwargs["text"])
+        accessToken="Access Token konnte nicht gesetzt werden."
 
 #Org wird schon ausgewählt wenn die Varible oben befüllt ist.
 if org:
