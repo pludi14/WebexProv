@@ -14,7 +14,6 @@ logger = logging.getLogger("WP.main")
 
 logger.info("________Webex Prov gestartet__________")
 
-
 app = Flask(__name__, template_folder="./gui/html/")
 
 authordner=os.path.join(os.getcwd(), "Auth")
